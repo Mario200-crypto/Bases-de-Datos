@@ -155,6 +155,34 @@ En general podemos observar inconsistencias en ciertos atributos, en su mayoría
 ```
 SELECT COUNT(*) as cant
 FROM original
-	  WHERE crash_date is null or crash_time is null or borough is null or zip_code is null or latitude is null or longitude is null or location is
+WHERE crash_date is null or crash_time is null or borough is null or zip_code is null or latitude is null or longitude is null or location is null or (on_street_name is null and off_street_name is null and cross_street_name is null ) or (contributing_factor_1 is null  and contributing_factor_2 is null and contributing_factor_3 is null and contributing_factor_4 is null and contributing_factor_5 is null) or collision_id is null or (vehicle_code_1 is null and vehicle_code_2 is null and vehicle_code_3 is null and vehicle_code_4 is null and vehicle_code_5 is null);
 ```
 > Tomando en cuenta que puede haber valores null en 4 de 5 de los atributos repetidos ya que puede haber hasta 5 vehículos involucrados. 
+
+## Limpieza de Datos
+Antes de empezar la limpieza de datos, si se quiere preservar la tabla original, se puede copiar el siguiente comando. Este hará una copia de la tabla original y entonces se podrá trabajar con la nueva tabla sin perder ningún dato.
+```
+CREATE TABLE limpieza AS 
+SELECT * FROM original;
+```
+Para optimizar el proyecto, hemos decidido eliminar las columnas de latitude y longitude, ya que es información que podemos extraer de location. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
+
+Los siguientes comandos deben ser copiados en alguna DBMS, por ejemplo TablePlus.
+```
+ALTER TABLE limpieza 
+ADD COLUMN crash_timestamp TIMESTAMP;
+UPDATE limpieza
+SET crash_timestamp = crash_date + crash_time;
+
+ALTER TABLE limpieza
+	DROP COLUMN latitude,
+	DROP COLUMN longitude,
+	DROP COLUMN crash_date,
+	DROP COLUMN crash_time;
+```
+Algunas otras cosas que se ha hecho fue cambiar los valores de zip_code en blanco a null. El comando utilizado fue el siguiente.
+```
+UPDATE limpieza
+SET zip_code = null
+WHERE zip_code LIKE ' ';
+```
