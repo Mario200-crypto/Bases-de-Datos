@@ -29,10 +29,10 @@ Este conjunto de datos contiene información sobre colisiones vehiculares ocurri
 `collision_id`, `latitude`, `longitude`, `location`, `number _of_persons_injured`, `number_of_persons_killed`, `number_of_pedestrians_injured`, `number_of_pedestrians_killed`, `number_of_cyclist_injured`, `number_of_cyclist_killed`, `number_of_motorists_njured`, `number_of_motorists_killed`
 
 * Atributos Categóricos:
-`borough`, `zip_code`, `vehicle_type_code`
+`borough`, `zip_code`, `contributing_factor`
 
 * Atributos Textuales:
-`contributing_factor`, `on_street_name`, `cross_street_name`, `off_street_name`
+`vehicle_type_code`, `on_street_name`, `cross_street_name`, `off_street_name`
 
 * Atributos Temporales:
 `crash_date`, `crash_time`
@@ -123,4 +123,38 @@ Ahora utilice el siguiente comando para importar la base de datos descargada a l
 FROM 'path' WITH (FORMAT CSV, HEADER true, DELIMITER ',');
 ```
 
+### Análisis Preliminar
+Durante un análisis inicial de la base de datos, pudimos observar que existen algunas columnas redundantes o que podrían juntarse para tener una menor cantidad de atributos. Por ejemplo, latitude y longitude son la separación de location, por lo que lo ideal sería quedarse con solo location. A su vez, crash_date y crash_time pueden juntarse en un atributo de tipo timestamp. 
+A través del siguiente query podemos observar la fecha más antigua y más reciente de las que se tienen registros en la base de datos. Esto es importante ya que podemos observar el tiempo que abarca nuestro análisis y los cambios en tecnología y contexto a través de esos años.
+```
+SELECT
+    MIN(crash_date) AS fecha_minima,
+    MAX(crash_date) AS fecha_maxima
+FROM original;
+```
+Algunos de los análisis iniciales se han centrado en máximos, mínimos y promedios. Esto debido a que es importante considerar los casos más extremos, así como cuál es el promedio. Los querys son lo siguientes:
+```
+SELECT 'persons_injured' as dato,
+	   MAX(persons_injured) as maximo,
+	   MIN(persons_injured) as minimo,
+	   AVG(persons_injured) as promedio	   
+FROM original;
+```
+> Este query puede ser replicado con los atributos `persons_killed`, `pedestrians_injured`, `pedestrians_killed`, `cyclists_injured`, `cyclists_killed`, `motorists_injured` y `motorists_killed`, para valores especificos de cada categoria. 
 
+Los siguientes query nos muestran las categorías que toma la policía de Nueva York como válidas, de esta forma podemos observar que existen 62, 61 ignorando los valores nulos, factores contribuyentes diferentes.
+```
+SELECT borough,
+COUNT(*) as total_duplicados
+FROM original
+GROUP BY borough;
+```
+> Este query puede ser replicado con los atributos `zip_code` y todos los `contributing_factor`.
+
+En general podemos observar inconsistencias en ciertos atributos, en su mayoría debido a errores humanos. Ya que estos reportes son escritos con la presión de todos los afectados sobre los policías, hay problemas en redacción, atributos incompletos o dejados en blanco. A través del siguiente query podemos encontrar la cantidad de tuplas con algún valor null.
+```
+SELECT COUNT(*) as cant
+FROM original
+	  WHERE crash_date is null or crash_time is null or borough is null or zip_code is null or latitude is null or longitude is null or location is
+```
+> Tomando en cuenta que puede haber valores null en 4 de 5 de los atributos repetidos ya que puede haber hasta 5 vehículos involucrados. 
