@@ -186,3 +186,24 @@ UPDATE limpieza
 SET zip_code = null
 WHERE zip_code LIKE ' ';
 ```
+PARTE E
+Calles mas peligrosas
+SELECT
+	on_street_name,
+	count (*) *100 as tot_acc_calle,
+	(select count (*) from limpieza) as tot_acc
+FROM limpieza
+group by on_street_name
+order by tot_acc_calle DESC
+limit 11; -- Para sacar el prom, divide tot_acc_calle/tot_acc
+
+--analisis de tipos de carros con más accidentes
+SELECT
+	vehicle_code_1,
+	count (*) *100 as tot_acc_auto,
+	(select count (*) from limpieza) as tot_acc
+FROM limpieza
+group by vehicle_code_1
+order by tot_acc_calle DESC
+limit 11; -- Para sacar el prom, divide tot_acc_auto/tot_acc
+
