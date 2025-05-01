@@ -165,7 +165,7 @@ Antes de empezar la limpieza de datos, si se quiere preservar la tabla original,
 CREATE TABLE limpieza AS 
 SELECT * FROM original;
 ```
-Para optimizar el proyecto, hemos decidido eliminar las columnas de latitude y longitude, ya que es información que podemos extraer de location. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
+Para optimizar el proyecto, hemos decidido eliminar la columna de location, ya que ésta contiene la información de latitude y longitud, para lo cuál es más eficiente tenerlas por separado. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
 
 Los siguientes comandos deben ser copiados en alguna DBMS, por ejemplo TablePlus.
 ```
@@ -175,8 +175,7 @@ UPDATE limpieza
 SET crash_timestamp = crash_date + crash_time;
 
 ALTER TABLE limpieza
-	DROP COLUMN latitude,
-	DROP COLUMN longitude,
+	DROP COLUMN location,
 	DROP COLUMN crash_date,
 	DROP COLUMN crash_time;
 ```
@@ -185,4 +184,71 @@ Algunas otras cosas que se ha hecho fue cambiar los valores de zip_code en blanc
 UPDATE limpieza
 SET zip_code = null
 WHERE zip_code LIKE ' ';
+```
+De la misma forma, utilizando el codigo a continuacion, cambiaron todos los latitudes y longitudes iguales a cero, a nulos.
+```
+UPDATE limpieza
+SET latitude = null
+WHERE latitude = 0;
+
+UPDATE limpieza
+SET longitude = null
+WHERE longitude = 0;
+```
+Despues, para la limpieza de las columnas relacionadas al nombre de las calles (on_street_name), off_street_name y cross_street_name, se sobbaron los prompts llenos de espacios (remplazados por null), se cambiaron los nombres a su version en mayusculas (para facilitar el manejo y analisis de datos) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las duplas).
+
+Para ello, es necesario llevar a cabo el siguiente codigo, en el orden correspondiente.
+```
+UPDATE limpieza
+SET on_street_name = null
+WHERE on_street_name LIKE '                                ';
+
+
+UPDATE limpieza
+SET on_street_name = TRIM(on_street_name);
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'AVENUENUE', 'AVENUE')
+WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'ave', 'AVENUE')
+WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'avenue', 'AVENUE')
+WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'Avenue', 'AVENUE')
+WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'AVENUEnue', 'AVENUE')
+WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
+WHERE on_street_name ILIKE '%vAVENUE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+
+UPDATE limpieza
+SET on_street_name = UPPER(on_street_name)
+WHERE on_street_name NOT LIKE UPPER(on_street_name);
+
+
+UPDATE limpieza
+SET cross_street_name = UPPER(cross_street_name)
+WHERE cross_street_name NOT LIKE UPPER(cross_street_name);
+
+
+UPDATE limpieza
+SET off_street_name = UPPER(off_street_name)
+WHERE off_street_name NOT LIKE UPPER(off_street_name);
 ```
