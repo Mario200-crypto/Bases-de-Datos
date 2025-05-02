@@ -238,7 +238,7 @@ Dependencias multivaluadas:
 
 Como podemos notar, el diagrama de entidad-relación está en FNBC porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en 4FN porque las dos DMV han sido aisladas en relaciones independientes (Factores, Vehiculos), evitando combinaciones cruzadas de valores. En esas relaciones (Factores, Vehiculos), collision_id es una superclave, cumpliendo la condición que exige 4FN. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en 4FN será el mostrado al inicio del apartado.
 
+![image](https://github.com/user-attachments/assets/3c357499-d4d2-42f7-99b1-5628ba769d36)
 
-![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
 
 
