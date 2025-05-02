@@ -186,3 +186,8 @@ UPDATE limpieza
 SET zip_code = null
 WHERE zip_code LIKE ' ';
 ```
+###  Normalización de datos hasta cuarta forma normal 
+
+Antes de ofrecer el modelo relacional final, ya que cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuanta la teoría de normalizción.
+
+
