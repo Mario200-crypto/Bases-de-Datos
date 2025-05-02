@@ -188,9 +188,9 @@ WHERE zip_code LIKE ' ';
 ```
 ## Normalización de datos hasta cuarta forma normal 
 
-  ### Modelo relacional intuitivo
+  ### Diagrama de entidad-relación intuitivo
 
-Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
+Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
 
 ![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
 
@@ -208,7 +208,8 @@ Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofre
 	- Clave primaria: factor_id (artificial)
  	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_factor_id → referencia a Tipo de Factor
     
- - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de inserción, borrado y modificación).
+ - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de 
+ inserción, borrado y modificación).
 	- Clave primaria: tipo_de_factor_id
  	- Relaciones: Se relaciona con Factores a través de tipo_de_factor_id (relación muchos a uno)
 
@@ -220,8 +221,24 @@ Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofre
 	- Clave primaria: tipo_de_vehículo_id
  	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
 
+## Modelo relacional 
+Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y caso de no estarlo ajustar el diagrama.
+
+Depndencias funcionales:
+- collision_id → crash_timestamp, borough, zip_code, location, on_street_name, cross_street_name, end_street_name
+- collision_id → people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed
+- factor_id → collision_id, tipo_de_factor_id, num_factor
+- tipo_de_factor_id → tipo_de_factor
+- vehiculo_id → collision_id, tipo_de_vehiculo_id, num_vehiculo
+- tipo_de_vehiculo_id → tipo_de_vehiculo
+
+Dependencias multivaluadas:
+- collision_id ↠ tipo_de_factor_id   (puede tener hasata 5 factores)
+- collision_id ↠ tipo_de_vehiculo_id  ( (puede tener hasta 5 tipos de vehículos)
+
+Como podemos notar, el diagrama de entidad-relación está en FNBC porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en 4FN porque las dos DMV han sido aisladas en relaciones independientes (Factores, Vehiculos), evitando combinaciones cruzadas de valores. En esas relaciones (Factores, Vehiculos), collision_id es una superclave, cumpliendo la condición que exige 4FN. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en 4FN será el mostrado al inicio del apartado.
 
 
-
+![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
 
 
