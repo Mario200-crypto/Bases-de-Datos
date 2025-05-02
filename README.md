@@ -192,6 +192,10 @@ WHERE zip_code LIKE ' ';
 
 Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
 
+![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
+
+
+
  - Lugar: Contiene información principal del evento de colisión, incluyendo la fecha y hora (crash_timestamp), la ubicación geográfica (borough, zip_code, location) y las calles involucradas.
 	- Clave primaria: collision_id
  	- Relaciones: Se conecta con Afectados, Factores y Vehiculos mediante collision_id.
@@ -212,9 +216,9 @@ Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofre
 	- Clave primaria: vehiculo_id (artificial)
  	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_vehiculo_id → referencia a Tipo de Vehiculo
     
- - Tipo de vehíuclo: Catálogo con los distintos tipos de vehículos registrados en colisiones (por ejemplo, automóvil, camión, bicicleta).
-	- Clave primaria: tipo_de_vehiculo_id
- 	- Relaciones:Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
+ - Tipo de vehículo: Catálogo con los distintos tipos de vehículos registrados en colisiones (por ejemplo, automóvil, camión, bicicleta).
+	- Clave primaria: tipo_de_vehículo_id
+ 	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
 
 
 
