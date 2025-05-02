@@ -221,7 +221,7 @@ Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, 
 	- Clave primaria: tipo_de_vehículo_id
  	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
 
-## Diagrama de entidad-relación en 4FN
+### Diagrama de entidad-relación en 4FN
 Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y caso de no estarlo ajustar el diagrama.
 
 Depndencias funcionales:
@@ -240,5 +240,61 @@ Como podemos notar, el diagrama de entidad-relación está en FNBC porque cada r
 
 ![image](https://github.com/user-attachments/assets/3c357499-d4d2-42f7-99b1-5628ba769d36)
 
+ ### Código para hacer la descomposición de la tabla original
 
+ #### Crear tablas
+```
+CREATE TABLE Lugar (
+    collision_id BIGINT PRIMARY KEY,
+    crash_timestamp TIMESTAMP,
+    borough VARCHAR(100),
+    location VARCHAR(100),
+    zip_code VARCHAR(100),
+    on_street_name VARCHAR(100),
+    cross_street_name VARCHAR(100),
+    end_street_name VARCHAR(100)
+);
 
+CREATE TABLE Afectados (
+    collision_id BIGINT PRIMARY KEY,
+    people_injured SMALLINT,
+    people_killed SMALLINT,
+    pedestrians_injured SMALLINT,
+    pedestrians_killed SMALLINT,
+    cyclists_injured SMALLINT,
+    cyclists_killed SMALLINT,
+    motorcyclists_injured SMALLINT,
+    motorcyclists_killed SMALLINT,
+    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+CREATE TABLE Tipo_de_Factor (
+    tipo_de_factor_id SMALLINT PRIMARY KEY,
+    tipo_de_factor VARCHAR(100)
+);
+
+CREATE TABLE Factores (
+    factor_id BIGINT PRIMARY KEY,
+    tipo_de_factor_id SMALLINT,
+    num_factor SMALLINT,
+    collision_id BIGINT,
+    CONSTRAINT fk_tipo_de_factor_id FOREIGN KEY (tipo_de_factor_id) REFERENCES Tipo_de_Factor(tipo_de_factor_id),
+    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+CREATE TABLE Tipo_de_Vehiculo (
+    tipo_de_vehiculo_id SMALLINT PRIMARY KEY,
+    tipo_de_vehiculo VARCHAR(100)
+);
+
+CREATE TABLE Vehiculos (
+    vehiculo_id BIGINT PRIMARY KEY,
+    tipo_de_vehiculo_id SMALLINT,
+    num_vehiculo SMALLINT,
+    collision_id BIGINT,
+    CONSTRAINT fk_tipo_de_vehículo_id FOREIGN KEY (tipo_de_vehiculo_id) REFERENCES Tipo_de_Vehiculo(tipo_de_vehiculo_id),
+     CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+```
+#### Poblar las tablas con los datos
