@@ -476,4 +476,9 @@ FROM original o
 JOIN tipo_de_vehiculo t ON o.vehicle_code_5 = t.tipo_de_vehiculo
 WHERE o.vehicle_code_5 IS NOT NULL;
 ```
+```
+--Ya que quedaron las tablas, se borra la tabla original
 
+drop table original;
+
+```
