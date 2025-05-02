@@ -221,7 +221,7 @@ Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, 
 	- Clave primaria: tipo_de_vehículo_id
  	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
 
-## Modelo relacional 
+## Diagrama de entidad-relación en 4FN
 Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y caso de no estarlo ajustar el diagrama.
 
 Depndencias funcionales:
