@@ -186,8 +186,38 @@ UPDATE limpieza
 SET zip_code = null
 WHERE zip_code LIKE ' ';
 ```
-###  Normalización de datos hasta cuarta forma normal 
+## Normalización de datos hasta cuarta forma normal 
 
-Antes de ofrecer el modelo relacional final, ya que cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuanta la teoría de normalizción.
+  ### Modelo relacional intuitivo
+
+Antes de ofrecer el modelo relacional final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
+
+ - Lugar: Contiene información principal del evento de colisión, incluyendo la fecha y hora (crash_timestamp), la ubicación geográfica (borough, zip_code, location) y las calles involucradas.
+	- Clave primaria: collision_id
+ 	- Relaciones: Se conecta con Afectados, Factores y Vehiculos mediante collision_id.
+
+ - Afectados: Almacena el número de personas heridas o fallecidas en la colisión, desglosado por tipo de usuario: peatones, ciclistas, motociclistas y personas en general.
+	- Clave primaria: collision_id
+ 	- Relaciones: relación 1 a 1 con Lugar
+    
+ - Factores: Registra los factores que contribuyeron al accidente, como distracción del conductor o condiciones del camino.
+	- Clave primaria: factor_id (artificial)
+ 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_factor_id → referencia a Tipo de Factor
+    
+ - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de inserción, borrado y modificación).
+	- Clave primaria: tipo_de_factor_id
+ 	- Relaciones: Se relaciona con Factores a través de tipo_de_factor_id (relación muchos a uno)
+
+ - Vehículo: Almacena los vehículos involucrados en una colisión, indicando el tipo y su orden (num_vehiculo).
+	- Clave primaria: vehiculo_id (artificial)
+ 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_vehiculo_id → referencia a Tipo de Vehiculo
+    
+ - Tipo de vehíuclo: Catálogo con los distintos tipos de vehículos registrados en colisiones (por ejemplo, automóvil, camión, bicicleta).
+	- Clave primaria: tipo_de_vehiculo_id
+ 	- Relaciones:Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
+
+
+
+
 
 
