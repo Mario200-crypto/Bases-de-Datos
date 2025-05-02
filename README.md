@@ -298,3 +298,182 @@ CREATE TABLE Vehiculos (
 
 ```
 #### Poblar las tablas con los datos
+```
+--tabla lugar
+
+insert into lugar (collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, end_street_name)
+select collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, off_street_name
+from original;
+
+```
+
+```
+
+--tabla afectados
+
+
+insert into afectados (collision_id,people_injured,people_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorcyclists_injured,motorcyclists_killed)
+select collision_id,persons_injured,persons_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorists_injured,motorists_killed
+from original;
+
+
+```
+
+```
+
+--tabla_tipo_de_factor
+
+
+insert into tipo_de_factor (tipo_de_factor)
+select DISTINCT contributing_factor_1
+from original
+where contributing_factor_1 is not null
+UNION
+select distinct contributing_factor_2
+from original
+where contributing_factor_2 is not null
+union 
+select distinct contributing_factor_3
+from original
+where contributing_factor_3 is not null
+union
+select distinct contributing_factor_4
+from original
+where contributing_factor_4 is not null
+UNION
+select distinct contributing_factor_5
+from original
+where contributing_factor_5 is not null;
+
+
+```
+
+```
+
+--tabla tipo_de_vehiculo
+
+
+insert into tipo_de_vehiculo (tipo_de_vehiculo)
+select DISTINCT vehicle_code_1
+from original
+where vehicle_code_1 is not null
+UNION
+select distinct vehicle_code_2
+from original
+where vehicle_code_2 is not null
+union 
+select distinct vehicle_code_3
+from original
+where vehicle_code_3 is not null
+union
+select distinct vehicle_code_4
+from original
+where vehicle_code_4 is not null
+UNION
+select distinct vehicle_code_5
+from original
+where vehicle_code_5 is not null;
+
+```
+```
+--tabla factores
+
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  1 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_1 = t.tipo_de_factor
+WHERE o.contributing_factor_1 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  2 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_2 = t.tipo_de_factor
+WHERE o.contributing_factor_2 IS NOT NULL;
+
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  3 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_3 = t.tipo_de_factor
+WHERE o.contributing_factor_3 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  4 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_4 = t.tipo_de_factor
+WHERE o.contributing_factor_4 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  5 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_5 = t.tipo_de_factor
+WHERE o.contributing_factor_5 IS NOT NULL;
+```
+```
+--tabla vehiculo
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  1 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_1 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_1 IS NOT NULL;
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  2 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_2 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_2 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  3 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_3 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_3 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  4 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_4 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_4 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  5 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_5 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_5 IS NOT NULL;
+```
+
