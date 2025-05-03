@@ -64,15 +64,13 @@ Ahora deberá conectarse a la base de datos creada.
 ```
 
 ### Esquema Inicial
-Para una carga exitosa, se debe definir la tabla de datos con los atributos y tipos respectivos. Pero antes de poder hacer eso, debemos de cambiar el DateStyle de la base a través del siguiente comando. Esto se debe a que la base es de Estados Unidos, donde se utiliza el formato de fecha MM/DD/YYYY, por lo que para evitar errores con diferentes configuraciones horarias se deberá cambiar.
-```
-SET DateStyle TO ‘US’;
-```
+Para una carga exitosa, se debe definir la tabla de datos con los atributos y tipos respectivos. 
+
 El siguiente código es la creación del esquema inicial. Puede ser copiado en `SQL SHELL (psql)` o cualquier DBMS compatible con PostgreSQL.
 ```
 DROP TABLE IF EXISTS original;
 CREATE TABLE original (
-   crash_date DATE,
+   crash_date TEXT,
    crash_time TIME,
    borough TEXT,
    zip_code TEXT,
@@ -108,10 +106,6 @@ CREATE TABLE original (
 Para la carga de datos es necesario descargar la base de datos, la cual puede ser encontrada en el siguiente link. Asegúrese de descargar el archivo de tipo .CSV. La descarga de archivos se encuentra casi al final de la página. 
 * [Motor Vehicle Collisions - Crashes - Catalog](https://catalog.data.gov/dataset/motor-vehicle-collisions-crashes).
 
-Antes de poder importar los datos, debemos de cambiar el DateStyle de la base a través del siguiente comando. Esto se debe a que la base es de Estados Unidos, donde se utiliza el formato de fecha MM/DD/YYYY, por lo que para evitar errores con diferentes configuraciones horarias se deberá cambiar.
-```
-SET DateStyle TO ‘US’;
-```
 También asegúrese de utilizar el siguiente comando para evitar errores en la importación.
 ```
 SET CLIENT_ENCODING TO 'UTF8';
@@ -165,26 +159,79 @@ Antes de empezar la limpieza de datos, si se quiere preservar la tabla original,
 CREATE TABLE limpieza AS 
 SELECT * FROM original;
 ```
-Para optimizar el proyecto, hemos decidido eliminar las columnas de latitude y longitude, ya que es información que podemos extraer de location. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
+Para optimizar el proyecto, hemos decidido eliminar la columna de location, ya que ésta contiene la información de latitude y longitud, para lo cuál es más eficiente tenerlas por separado. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
 
 Los siguientes comandos deben ser copiados en alguna DBMS, por ejemplo TablePlus.
 ```
-ALTER TABLE limpieza 
-ADD COLUMN crash_timestamp TIMESTAMP;
+ALTER TABLE limpieza
+	ADD COLUMN crash_timestamp TIMESTAMP;
+
 UPDATE limpieza
-SET crash_timestamp = crash_date + crash_time;
+SET crash_timestamp = to_date(crash_date, 'mm-dd-yyyy') + crash_time;
 
 ALTER TABLE limpieza
-	DROP COLUMN latitude,
-	DROP COLUMN longitude,
+	DROP COLUMN location,
 	DROP COLUMN crash_date,
 	DROP COLUMN crash_time;
-```
-Algunas otras cosas que se ha hecho fue cambiar los valores de zip_code en blanco a null. El comando utilizado fue el siguiente.
-```
 UPDATE limpieza
 SET zip_code = null
-WHERE zip_code LIKE ' ';
+	WHERE zip_code LIKE ' ';
+```
+De la misma forma, utilizando el codigo a continuacion, cambiamos todas las latitudes y longitudes iguales a cero, a nulos.
+```
+UPDATE limpieza
+SET latitude = null
+	WHERE latitude = 0;
+UPDATE limpieza
+SET longitude = null
+	WHERE longitude = 0;
+```
+Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se ***sobbaron???*** los prompts llenos de espacios (remplazados por null), se cambiaron los nombres a su version en mayusculas (para facilitar el manejo y analisis de datos) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
+
+Para ello, es necesario llevar a cabo el siguiente codigo, en el orden correspondiente.
+```
+UPDATE limpieza
+SET on_street_name = null
+	WHERE on_street_name LIKE '                                ';
+	
+UPDATE limpieza
+SET on_street_name = TRIM(on_street_name);
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'AVENUENUE', 'AVENUE')
+	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+	
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'ave', 'AVENUE')
+	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'avenue', 'AVENUE')
+	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'Avenue', 'AVENUE')
+	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'AVENUEnue', 'AVENUE')
+	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+UPDATE limpieza
+SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
+	WHERE on_street_name ILIKE '%vAVENUE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+UPDATE limpieza
+SET on_street_name = UPPER(on_street_name)
+	WHERE on_street_name NOT LIKE UPPER(on_street_name);
+
+UPDATE limpieza
+SET cross_street_name = UPPER(cross_street_name)
+	WHERE cross_street_name NOT LIKE UPPER(cross_street_name);
+
+UPDATE limpieza
+SET off_street_name = UPPER(off_street_name)
+	WHERE off_street_name NOT LIKE UPPER(off_street_name);
 ```
 ## Normalización de datos hasta cuarta forma normal 
 
@@ -192,63 +239,64 @@ WHERE zip_code LIKE ' ';
 
 Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
 
+***corregir modelo***
 ![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
 
 
 
- - Lugar: Contiene información principal del evento de colisión, incluyendo la fecha y hora (crash_timestamp), la ubicación geográfica (borough, zip_code, location) y las calles involucradas.
-	- Clave primaria: collision_id
- 	- Relaciones: Se conecta con Afectados, Factores y Vehiculos mediante collision_id.
+ - Lugar: Contiene información principal del evento de colisión, incluyendo la fecha y hora (`crash_timestamp`), la ubicación geográfica (`borough`, `zip_code`, `latitude`, `longitude`) y las calles involucradas (`on_street_name`, `off_street_name` y `cross_street_name`).
+	- Clave primaria: `collision_id`
+ 	- Relaciones: Se conecta con Afectados, Factores y Vehiculos mediante `collision_id`.
 
  - Afectados: Almacena el número de personas heridas o fallecidas en la colisión, desglosado por tipo de usuario: peatones, ciclistas, motociclistas y personas en general.
-	- Clave primaria: collision_id
+	- Clave primaria: `collision_id`
  	- Relaciones: relación 1 a 1 con Lugar
     
  - Factores: Registra los factores que contribuyeron al accidente, como distracción del conductor o condiciones del camino.
-	- Clave primaria: factor_id (artificial)
- 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_factor_id → referencia a Tipo de Factor
+	- Clave primaria: `factor_id` (artificial)
+ 	- Claves foráneas: `collision_id` → referencia a Lugar, `tipo_de_factor_id` → referencia a Tipo de Factor
     
- - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de 
- inserción, borrado y modificación).
-	- Clave primaria: tipo_de_factor_id
- 	- Relaciones: Se relaciona con Factores a través de tipo_de_factor_id (relación muchos a uno)
+ - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de inserción, borrado y modificación).
+	- Clave primaria: `tipo_de_factor_id`
+ 	- Relaciones: se relaciona con Factores a través de `tipo_de_factor_id` (relación muchos a uno)
 
- - Vehículo: Almacena los vehículos involucrados en una colisión, indicando el tipo y su orden (num_vehiculo).
-	- Clave primaria: vehiculo_id (artificial)
- 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_vehiculo_id → referencia a Tipo de Vehiculo
+ - Vehículo: Almacena los vehículos involucrados en una colisión, indicando el tipo y su orden (`num_vehiculo`).
+	- Clave primaria: `vehiculo_id` (artificial)
+ 	- Claves foráneas: `collision_id` → referencia a Lugar, `tipo_de_vehiculo_id` → referencia a Tipo de Vehiculo
     
  - Tipo de vehículo: Catálogo con los distintos tipos de vehículos registrados en colisiones (por ejemplo, automóvil, camión, bicicleta).
-	- Clave primaria: tipo_de_vehículo_id
- 	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
+	- Clave primaria: `tipo_de_vehículo_id`
+ 	- Relaciones: Se relaciona con Vehiculos mediante `tipo_de_vehiculo_id` (relación muchos a uno)
 
 ### Diagrama de entidad-relación en 4FN
-Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y caso de no estarlo ajustar el diagrama.
+Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y en caso de no estarlo ajustar el diagrama.
 
 Depndencias funcionales:
-- collision_id → crash_timestamp, borough, zip_code, location, on_street_name, cross_street_name, end_street_name
-- collision_id → people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed
-- factor_id → collision_id, tipo_de_factor_id, num_factor
-- tipo_de_factor_id → tipo_de_factor
-- vehiculo_id → collision_id, tipo_de_vehiculo_id, num_vehiculo
-- tipo_de_vehiculo_id → tipo_de_vehiculo
+- `collision_id` → `crash_timestamp`, `borough`, `zip_code`, `latitude`, `longitude`, `on_street_name`, `cross_street_name`, `end_street_name`
+- `collision_id` → `people_injured`, `people_killed`, `pedestrians_injured`, `pedestrians_killed`, `cyclists_injured`, `cyclists_killed`, `motorcyclists_injured`, `motorcyclists_killed`
+- `factor_id` → `collision_id`, `tipo_de_factor_id`, `num_factor`
+- `tipo_de_factor_id` → `tipo_de_factor`
+- `vehiculo_id` → `collision_id`, `tipo_de_vehiculo_id`, `num_vehiculo`
+- `tipo_de_vehiculo_id` → `tipo_de_vehiculo`
 
 Dependencias multivaluadas:
-- collision_id ↠ tipo_de_factor_id   (puede tener hasata 5 factores)
-- collision_id ↠ tipo_de_vehiculo_id  ( (puede tener hasta 5 tipos de vehículos)
+- `collision_id` ↠ `tipo_de_factor_id`   (puede tener hasta 5 factores)
+- `collision_id` ↠ `tipo_de_vehiculo_id`  (puede tener hasta 5 tipos de vehículos)
 
-Como podemos notar, el diagrama de entidad-relación está en FNBC porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en 4FN porque las dos DMV han sido aisladas en relaciones independientes (Factores, Vehiculos), evitando combinaciones cruzadas de valores. En esas relaciones (Factores, Vehiculos), collision_id es una superclave, cumpliendo la condición que exige 4FN. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en 4FN será el mostrado al inicio del apartado.
+Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en *4FN* porque las dos DMV han sido aisladas en relaciones independientes (Factores, Vehiculos), evitando combinaciones cruzadas de valores. En esas relaciones (Factores, Vehiculos), `collision_id` es una superclave, cumpliendo la condición que exige *4FN*. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en *4FN* será el mostrado al inicio del apartado.
 
 ![image](https://github.com/user-attachments/assets/3c357499-d4d2-42f7-99b1-5628ba769d36)
 
- ### Código para hacer la descomposición de la tabla original
+### Código para hacer la descomposición de la tabla original
 
- #### Crear tablas
+#### Creacion de tablas
 ```
 CREATE TABLE Lugar (
     collision_id BIGINT PRIMARY KEY,
     crash_timestamp TIMESTAMP,
     borough VARCHAR(100),
-    location VARCHAR(100),
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
     zip_code VARCHAR(100),
     on_street_name VARCHAR(100),
     cross_street_name VARCHAR(100),
@@ -265,7 +313,7 @@ CREATE TABLE Afectados (
     cyclists_killed SMALLINT,
     motorcyclists_injured SMALLINT,
     motorcyclists_killed SMALLINT,
-    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+    CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
 );
 
 CREATE TABLE Tipo_de_Factor (
@@ -279,7 +327,7 @@ CREATE TABLE Factores (
     num_factor SMALLINT,
     collision_id BIGINT,
     CONSTRAINT fk_tipo_de_factor_id FOREIGN KEY (tipo_de_factor_id) REFERENCES Tipo_de_Factor(tipo_de_factor_id),
-    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+    CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
 );
 
 CREATE TABLE Tipo_de_Vehiculo (
@@ -293,64 +341,57 @@ CREATE TABLE Vehiculos (
     num_vehiculo SMALLINT,
     collision_id BIGINT,
     CONSTRAINT fk_tipo_de_vehículo_id FOREIGN KEY (tipo_de_vehiculo_id) REFERENCES Tipo_de_Vehiculo(tipo_de_vehiculo_id),
-     CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+    CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
 );
 
 ```
+
 #### Poblar las tablas con los datos
 ```
---tabla lugar
+--tabla Lugar
 
-insert into lugar (collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, end_street_name)
-select collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, off_street_name
-from original;
-
-```
-
-```
-
---tabla afectados
-
-
-insert into afectados (collision_id,people_injured,people_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorcyclists_injured,motorcyclists_killed)
-select collision_id,persons_injured,persons_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorists_injured,motorists_killed
-from original;
-
+INSERT INTO Lugar (collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, end_street_name)
+SELECT collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, off_street_name
+FROM limpieza;
 
 ```
 
 ```
+--tabla Afectados
 
---tabla_tipo_de_factor
+INSERT INTO Afectados (collision_id, people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed)
+SELECT collision_id, persons_injured, persons_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorists_injured, motorists_killed
+FROM limpieza;
+```
 
+```
+--tabla Tipo_de_Factor
 
-insert into tipo_de_factor (tipo_de_factor)
-select DISTINCT contributing_factor_1
-from original
-where contributing_factor_1 is not null
+INSERT INTO tipo_de_factor (tipo_de_factor)
+SELECT DISTINCT contributing_factor_1
+FROM limpieza
+	WHERE contributing_factor_1 IS NOT NULL
 UNION
-select distinct contributing_factor_2
-from original
-where contributing_factor_2 is not null
-union 
-select distinct contributing_factor_3
-from original
-where contributing_factor_3 is not null
-union
-select distinct contributing_factor_4
-from original
-where contributing_factor_4 is not null
+SELECT DISTINCT contributing_factor_2
+FROM original
+	WHERE contributing_factor_2 IS NOT NULL
+UNION 
+SELECT DISTINCT contributing_factor_3
+FROM original
+	WHERE contributing_factor_3 IS NOT NULL
 UNION
-select distinct contributing_factor_5
-from original
-where contributing_factor_5 is not null;
-
-
+SELECT DISTINCT contributing_factor_4
+FROM original
+	WHERE contributing_factor_4 IS NOT NULL
+UNION
+SELECT DISTINCT contributing_factor_5
+FROM original
+	WHERE contributing_factor_5 IS NOT NULL;
 ```
 
 ```
 
---tabla tipo_de_vehiculo
+--tabla Tipo_de_Vehiculo
 
 
 insert into tipo_de_vehiculo (tipo_de_vehiculo)
