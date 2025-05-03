@@ -424,42 +424,42 @@ FROM limpieza
 	WHERE contributing_factor_1 IS NOT NULL
 UNION
 SELECT DISTINCT contributing_factor_2
-FROM original
+FROM limpieza
 	WHERE contributing_factor_2 IS NOT NULL
 UNION 
 SELECT DISTINCT contributing_factor_3
-FROM original
+FROM limpieza
 	WHERE contributing_factor_3 IS NOT NULL
 UNION
 SELECT DISTINCT contributing_factor_4
-FROM original
+FROM limpieza
 	WHERE contributing_factor_4 IS NOT NULL
 UNION
 SELECT DISTINCT contributing_factor_5
-FROM original
+FROM limpieza
 	WHERE contributing_factor_5 IS NOT NULL;
 ```
 Tabla **tipo_de_vehiculo**
 ```
 INSERT INTO nm.tipo_de_vehiculo (tipo_de_vehiculo)
 SELECT DISTINCT vehicle_code_1
-FROM original
+FROM limpieza
   WHERE vehicle_code_1 IS NOT NULL
 UNION
 SELECT DISTINCT vehicle_code_2
-FROM original
+FROM limpieza
   WHERE vehicle_code_2 IS NOT NULL
 UNION 
 SELECT DISTINCT vehicle_code_3
-FROM original
+FROM limpieza
   WHERE vehicle_code_3 IS NOT NULL
 UNION
 SELECT DISTINCT vehicle_code_4
-FROM original
+FROM limpieza
   WHERE vehicle_code_4 IS NOT NULL
 UNION
 SELECT DISTINCT vehicle_code_5
-FROM original
+FROM limpieza
   WHERE vehicle_code_5 IS NOT NULL;
 
 ```
