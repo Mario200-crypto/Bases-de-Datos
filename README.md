@@ -186,3 +186,299 @@ UPDATE limpieza
 SET zip_code = null
 WHERE zip_code LIKE ' ';
 ```
+## Normalización de datos hasta cuarta forma normal 
+
+  ### Diagrama de entidad-relación intuitivo
+
+Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
+
+![image](https://github.com/user-attachments/assets/1d44832a-2ada-415c-8532-febd4ddeacf4)
+
+
+
+ - Lugar: Contiene información principal del evento de colisión, incluyendo la fecha y hora (crash_timestamp), la ubicación geográfica (borough, zip_code, location) y las calles involucradas.
+	- Clave primaria: collision_id
+ 	- Relaciones: Se conecta con Afectados, Factores y Vehiculos mediante collision_id.
+
+ - Afectados: Almacena el número de personas heridas o fallecidas en la colisión, desglosado por tipo de usuario: peatones, ciclistas, motociclistas y personas en general.
+	- Clave primaria: collision_id
+ 	- Relaciones: relación 1 a 1 con Lugar
+    
+ - Factores: Registra los factores que contribuyeron al accidente, como distracción del conductor o condiciones del camino.
+	- Clave primaria: factor_id (artificial)
+ 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_factor_id → referencia a Tipo de Factor
+    
+ - Tipo de factor: Catálogo de posibles factores contribuyentes a una colisión. Permite estandarizar y evitar duplicidad en la descripción de factores (también evita anomalías de 
+ inserción, borrado y modificación).
+	- Clave primaria: tipo_de_factor_id
+ 	- Relaciones: Se relaciona con Factores a través de tipo_de_factor_id (relación muchos a uno)
+
+ - Vehículo: Almacena los vehículos involucrados en una colisión, indicando el tipo y su orden (num_vehiculo).
+	- Clave primaria: vehiculo_id (artificial)
+ 	- Claves foráneas: collision_id → referencia a Lugar, tipo_de_vehiculo_id → referencia a Tipo de Vehiculo
+    
+ - Tipo de vehículo: Catálogo con los distintos tipos de vehículos registrados en colisiones (por ejemplo, automóvil, camión, bicicleta).
+	- Clave primaria: tipo_de_vehículo_id
+ 	- Relaciones: Se relaciona con Vehiculos mediante tipo_de_vehiculo_id (relación muchos a uno)
+
+### Diagrama de entidad-relación en 4FN
+Ahora enunciaremos todas las DF y las DMV de cada tabla, para después verficar que el diagrama este en cuarta formal y caso de no estarlo ajustar el diagrama.
+
+Depndencias funcionales:
+- collision_id → crash_timestamp, borough, zip_code, location, on_street_name, cross_street_name, end_street_name
+- collision_id → people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed
+- factor_id → collision_id, tipo_de_factor_id, num_factor
+- tipo_de_factor_id → tipo_de_factor
+- vehiculo_id → collision_id, tipo_de_vehiculo_id, num_vehiculo
+- tipo_de_vehiculo_id → tipo_de_vehiculo
+
+Dependencias multivaluadas:
+- collision_id ↠ tipo_de_factor_id   (puede tener hasata 5 factores)
+- collision_id ↠ tipo_de_vehiculo_id  ( (puede tener hasta 5 tipos de vehículos)
+
+Como podemos notar, el diagrama de entidad-relación está en FNBC porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en 4FN porque las dos DMV han sido aisladas en relaciones independientes (Factores, Vehiculos), evitando combinaciones cruzadas de valores. En esas relaciones (Factores, Vehiculos), collision_id es una superclave, cumpliendo la condición que exige 4FN. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en 4FN será el mostrado al inicio del apartado.
+
+![image](https://github.com/user-attachments/assets/3c357499-d4d2-42f7-99b1-5628ba769d36)
+
+ ### Código para hacer la descomposición de la tabla original
+
+ #### Crear tablas
+```
+CREATE TABLE Lugar (
+    collision_id BIGINT PRIMARY KEY,
+    crash_timestamp TIMESTAMP,
+    borough VARCHAR(100),
+    location VARCHAR(100),
+    zip_code VARCHAR(100),
+    on_street_name VARCHAR(100),
+    cross_street_name VARCHAR(100),
+    end_street_name VARCHAR(100)
+);
+
+CREATE TABLE Afectados (
+    collision_id BIGINT PRIMARY KEY,
+    people_injured SMALLINT,
+    people_killed SMALLINT,
+    pedestrians_injured SMALLINT,
+    pedestrians_killed SMALLINT,
+    cyclists_injured SMALLINT,
+    cyclists_killed SMALLINT,
+    motorcyclists_injured SMALLINT,
+    motorcyclists_killed SMALLINT,
+    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+CREATE TABLE Tipo_de_Factor (
+    tipo_de_factor_id SMALLINT PRIMARY KEY,
+    tipo_de_factor VARCHAR(100)
+);
+
+CREATE TABLE Factores (
+    factor_id BIGINT PRIMARY KEY,
+    tipo_de_factor_id SMALLINT,
+    num_factor SMALLINT,
+    collision_id BIGINT,
+    CONSTRAINT fk_tipo_de_factor_id FOREIGN KEY (tipo_de_factor_id) REFERENCES Tipo_de_Factor(tipo_de_factor_id),
+    CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+CREATE TABLE Tipo_de_Vehiculo (
+    tipo_de_vehiculo_id SMALLINT PRIMARY KEY,
+    tipo_de_vehiculo VARCHAR(100)
+);
+
+CREATE TABLE Vehiculos (
+    vehiculo_id BIGINT PRIMARY KEY,
+    tipo_de_vehiculo_id SMALLINT,
+    num_vehiculo SMALLINT,
+    collision_id BIGINT,
+    CONSTRAINT fk_tipo_de_vehículo_id FOREIGN KEY (tipo_de_vehiculo_id) REFERENCES Tipo_de_Vehiculo(tipo_de_vehiculo_id),
+     CONSTRAINT fk_collsion_id FOREIGN KEY (collision_id) REFERENCES Lugar(collision_id)
+);
+
+```
+#### Poblar las tablas con los datos
+```
+--tabla lugar
+
+insert into lugar (collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, end_street_name)
+select collision_id, crash_timestamp, borough, location, zip_code, on_street_name, cross_street_name, off_street_name
+from original;
+
+```
+
+```
+
+--tabla afectados
+
+
+insert into afectados (collision_id,people_injured,people_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorcyclists_injured,motorcyclists_killed)
+select collision_id,persons_injured,persons_killed,pedestrians_injured, pedestrians_killed,cyclists_injured, cyclists_killed,motorists_injured,motorists_killed
+from original;
+
+
+```
+
+```
+
+--tabla_tipo_de_factor
+
+
+insert into tipo_de_factor (tipo_de_factor)
+select DISTINCT contributing_factor_1
+from original
+where contributing_factor_1 is not null
+UNION
+select distinct contributing_factor_2
+from original
+where contributing_factor_2 is not null
+union 
+select distinct contributing_factor_3
+from original
+where contributing_factor_3 is not null
+union
+select distinct contributing_factor_4
+from original
+where contributing_factor_4 is not null
+UNION
+select distinct contributing_factor_5
+from original
+where contributing_factor_5 is not null;
+
+
+```
+
+```
+
+--tabla tipo_de_vehiculo
+
+
+insert into tipo_de_vehiculo (tipo_de_vehiculo)
+select DISTINCT vehicle_code_1
+from original
+where vehicle_code_1 is not null
+UNION
+select distinct vehicle_code_2
+from original
+where vehicle_code_2 is not null
+union 
+select distinct vehicle_code_3
+from original
+where vehicle_code_3 is not null
+union
+select distinct vehicle_code_4
+from original
+where vehicle_code_4 is not null
+UNION
+select distinct vehicle_code_5
+from original
+where vehicle_code_5 is not null;
+
+```
+```
+--tabla factores
+
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  1 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_1 = t.tipo_de_factor
+WHERE o.contributing_factor_1 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  2 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_2 = t.tipo_de_factor
+WHERE o.contributing_factor_2 IS NOT NULL;
+
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  3 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_3 = t.tipo_de_factor
+WHERE o.contributing_factor_3 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  4 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_4 = t.tipo_de_factor
+WHERE o.contributing_factor_4 IS NOT NULL;
+
+INSERT INTO factores (num_factor, collision_id, tipo_de_factor_id)
+SELECT
+  5 AS num_factor,
+  o.collision_id,
+  t.tipo_de_factor_id
+FROM original o
+JOIN tipo_de_factor t ON o.contributing_factor_5 = t.tipo_de_factor
+WHERE o.contributing_factor_5 IS NOT NULL;
+```
+```
+--tabla vehiculo
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  1 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_1 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_1 IS NOT NULL;
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  2 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_2 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_2 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  3 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_3 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_3 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  4 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_4 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_4 IS NOT NULL;
+
+
+INSERT INTO vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
+SELECT
+  5 AS num_vehiculo,
+  o.collision_id,
+  t.tipo_de_vehiculo_id
+FROM original o
+JOIN tipo_de_vehiculo t ON o.vehicle_code_5 = t.tipo_de_vehiculo
+WHERE o.vehicle_code_5 IS NOT NULL;
+```
+```
+--Ya que quedaron las tablas, se borra la tabla original
+
+drop table original;
+
+```
