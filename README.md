@@ -564,5 +564,51 @@ Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla origina
 ```
 DROP TABLE original;
 DROP TABLE limpieza;
-
 ```
+## Análisis de Datos y Atributos Analíticos
+Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `queries.sql` dentro del repositorio.
+
+### Estadísticas Básicas
+#### Calles con más accidentes
+IMAGEN
+
+#### Principales tipos de carros involucrados
+IMAGEN
+
+#### Principales factores contribuyentes
+IMAGEN
+
+#### Tasa de gravedad de los accidentes
+| Acc. con Lesiones | Total Accidentes |  Promedio  |
+| -------------     | :-------------:  |:----------:|
+|     513848	      |     2166077	     |    23.72   |
+
+>AH
+
+| Acc. con Muertes  | Total Accidentes |  Promedio  |
+| -------------     | :-------------:  |:----------:|
+|       3226	      |     2166077	     |   0.1489   |
+>AH
+### Análisis 
+#### Análisis frecuencia-nivel socioeconómico
+
+#### Análisis gravedad-nivel socioeconómico
+|Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
+| -------------|:------------:|:---------------:|:--------: |
+|BRONX	       |55051	        |221614	          |24.84      |
+|BROOKLYN	     |122734	      |478105	          |25.67      |
+|MANHATTAN	   |61341	        |332624	          |18.44      |
+|QUEENS	       |93826	        |401324	          |23.38      |
+|STATEN ISLAND |13512	        |62750	          |21.53      |
+|NULL 	       |167384        |669660           |24.99      |
+
+
+muertes
+|Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
+| -------------|:------------:|:---------------:|:--------:  |
+|BRONX	       |296	          |221614	          |0.1335      |
+|BROOKLYN	     |659	          |478105	          |0.1378      |
+|MANHATTAN	   |351	          |332624	          |0.1055      |
+|QUEENS	       |533	          |401324	          |0.1328      |
+|STATEN ISLAND |100	          |62750	          |0.1593      |
+|NULL 	       |1287          |669660           |0.1921      |
