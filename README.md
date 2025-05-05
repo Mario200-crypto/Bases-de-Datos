@@ -177,7 +177,11 @@ UPDATE limpieza
 SET zip_code = NULL
 	WHERE zip_code LIKE ' ';
 ```
-De la misma forma, utilizando el codigo a continuacion, cambiamos todas las latitudes y longitudes iguales a cero, a nulos.
+De la misma forma, utilizando el codigo a continuacion, cambiamos todas las latitudes y longitudes iguales a cero, a nulos. A la vez, eliminaremos aquellas coliciones que hayan ocurrido fuera de la ciudad de Nueva York, las delimitaciones geograficas utilizadas son:
+> Latitud mínima: 40.4774
+> Latitud máxima: 40.9176
+> Longitud mínima: -74.2591
+> Longitud máxima: -73.7004
 ```
 UPDATE limpieza
 SET latitude = NULL
@@ -186,6 +190,11 @@ SET latitude = NULL
 UPDATE limpieza
 SET longitude = NULL
 	WHERE longitude = 0;
+
+DELETE
+FROM limpieza 
+  WHERE NOT (latitude BETWEEN 40.4774 AND 40.9176) 
+  AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 ```
 Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se ***sobbaron???*** los prompts llenos de espacios (remplazados por NULL) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
 
