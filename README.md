@@ -604,7 +604,20 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 >AH
 ### Análisis 
 #### Análisis frecuencia-nivel socioeconómico
+2012-2025
 ![ME VOY A MATAR](https://github.com/user-attachments/assets/863fc9ac-36ae-45c9-aebf-e6d266608390)
+2023
+![2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a)
+2022
+![2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30)
+2021
+![2021](https://github.com/user-attachments/assets/5a818521-5d17-4f6c-8142-48733ceeb159)
+2020
+![2020](https://github.com/user-attachments/assets/6a01ed14-0c13-4c57-a0dd-2b727a25c369)
+2019
+![2019](https://github.com/user-attachments/assets/ce50622b-40b6-4fb6-9081-8f4caede063f)
+2024
+![2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d)
 
 #### Análisis gravedad-nivel socioeconómico
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
