@@ -581,15 +581,15 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 ### Estadísticas Básicas
 #### Calles con más accidentes
 ![Top_calle](https://github.com/user-attachments/assets/8212747e-9722-4638-9de9-584792d4cc39)
-
+> Podemos observar que la mayoria de accidentes no reportan una calle principal involucrada, estas omisiones podemos atribuirlas a la NYPD. En general, podemos observar a Broadway como la calle con más accidentes, dicha calle atraviesa Manhattan y Bronx.
 
 #### Principales tipos de carros involucrados
 ![Top_vehiculo](https://github.com/user-attachments/assets/5fcaa3db-f10f-4c14-9ba3-b358b8b83089)
-
+> Podemos observar que la mayoría de accidentes involucran a sedanes y SUV, que son los coches más populares para individuos y familias. Observamos también un porcentaje significativo de transportes publicos, como taxi y bus, dado que solo el 54% [*(Hunter College, 2024)*](https://www.hunterurban.org/wp-content/uploads/2024/06/Car-Light-NYC-Infographics-May-2024.pdf) de los hogares en Nueva York poseen un coche, esta incidencia toma sentido, esto es asumiendo que no existen taxis dentro de los vehículos catalogados como sedan.
 
 #### Principales factores contribuyentes
 ![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
-
+> k
 
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
@@ -617,7 +617,7 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |NULL 	       |167384        |669660           |24.99      |
 
 
-muertes
+
 |Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------:  |
 |BRONX	       |296	          |221614	          |0.1335      |
