@@ -579,13 +579,16 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 ### Estadísticas Básicas
 #### Calles con más accidentes
-IMAGEN
+![Top_calle](https://github.com/user-attachments/assets/8212747e-9722-4638-9de9-584792d4cc39)
+
 
 #### Principales tipos de carros involucrados
-IMAGEN
+![Top_vehiculo](https://github.com/user-attachments/assets/5fcaa3db-f10f-4c14-9ba3-b358b8b83089)
+
 
 #### Principales factores contribuyentes
-IMAGEN
+![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
+
 
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
