@@ -603,6 +603,7 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 >AH
 ### Análisis 
 #### Análisis frecuencia-nivel socioeconómico
+![ME VOY A MATAR](https://github.com/user-attachments/assets/863fc9ac-36ae-45c9-aebf-e6d266608390)
 
 #### Análisis gravedad-nivel socioeconómico
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
