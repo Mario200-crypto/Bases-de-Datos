@@ -614,6 +614,8 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 ##### **2022**
 ![Distribucion Accidentes 2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30 "Distribucion de accidentes 2022")
+######
+Para una distribución de todos los accidentes ocurridos desde 2012 (el dato más viejo de la base de datos), ingrese al siguiente link: [Incidentes por distrito](https://aguayo-0107.github.io/mapa_NYC/). Ahi encontrara la cantidad de accidentes catalogados por su distrito, el mapa tambien muestra los distritos de color diferente segun la cantidad de colisiones ocurridos dentro de ellos.
 
 #### Análisis gravedad-zona
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
