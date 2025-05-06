@@ -605,6 +605,8 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 ### Análisis 
 #### Análisis frecuencia-nivel socioeconómico
 
+> Los mapas de 2022, 2023 y 2024 muestran una distribución bastante consistente de accidentes en Nueva York. A lo largo de los tres años se repiten patrones similares: los accidentes se concentran principalmente en áreas muy transitadas como Manhattan, Brooklyn y Queens. Aunque la intensidad varía un poco de un año a otro, las zonas más afectadas tienden a ser las mismas, lo que sugiere que ciertos sectores siguen siendo más propensos a los accidentes. Esta consistencia puede ayudar a identificar puntos críticos donde convendría implementar medidas de prevención.
+
 2024
 ![2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d)
 
