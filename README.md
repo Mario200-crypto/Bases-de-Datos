@@ -589,19 +589,19 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 #### Principales factores contribuyentes
 ![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
-> k
+> En el análisis de los principales factores de accidentes en Nueva York, se observa que el 66.4% de los casos no especifican la causa, lo cual representa una limitación en la calidad de los datos. Aun así, la distracción del conductor resalta como el factor identificado más común (10.6%), seguido por no ceder el paso (2.7%) y conducir demasiado cerca de otro vehículo (2.6%).
 
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |     513848	      |     2166077	     |    23.72   |
 
->AH
+> De los más de 2 millones de accidentes registrados, alrededor del 23.7% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
 
 | Acc. con Muertes  | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |       3226	      |     2166077	     |   0.1489   |
->AH
+> Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
 #### Análisis frecuencia-nivel socioeconómico
 
@@ -625,6 +625,7 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |STATEN ISLAND |13512	        |62750	          |21.53      |
 |NULL 	       |167384        |669660           |24.99      |
 
+> Brooklyn y Bronx son los distritos con mayor proporción de accidentes con lesiones, con promedios cercanos al 25%. Seguidos por Queens, mientras que Manhattan presenta el promedio más bajo (18.44%).
 
 
 |Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
@@ -635,3 +636,5 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |QUEENS	       |533	          |401324	          |0.1328      |
 |STATEN ISLAND |100	          |62750	          |0.1593      |
 |NULL 	       |1287          |669660           |0.1921      |
+
+> Staten Island muestra el promedio más alto de accidentes con muertes (0.1593%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1055%).
