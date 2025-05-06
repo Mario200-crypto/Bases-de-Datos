@@ -603,21 +603,19 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |       3226	      |     2166077	     |   0.1489   |
 > Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
-#### Análisis frecuencia-nivel socioeconómico
-
+#### Análisis frecuencia-zona
 > Los mapas de 2022, 2023 y 2024 muestran una distribución bastante consistente de accidentes en Nueva York. A lo largo de los tres años se repiten patrones similares: los accidentes se concentran principalmente en áreas muy transitadas como Manhattan, Brooklyn y Queens. Aunque la intensidad varía un poco de un año a otro, las zonas más afectadas tienden a ser las mismas, lo que sugiere que ciertos sectores siguen siendo más propensos a los accidentes. Esta consistencia puede ayudar a identificar puntos críticos donde convendría implementar medidas de prevención.
 
-2024
-![2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d)
+##### **2024**
+![Distribucion Accidentes 2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d "Distribucion de accidentes durante 2024")
 
-2023
-![2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a)
+##### **2023**
+![Distribucion Accidentes 2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a "Distribucion de accidentes 2023")
 
-2022
-![2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30)
+##### **2022**
+![Distribucion Accidentes 2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30 "Distribucion de accidentes 2022")
 
-
-#### Análisis gravedad-nivel socioeconómico
+#### Análisis gravedad-zona
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------: |
 |BRONX	       |55051	        |221614	          |24.84      |
