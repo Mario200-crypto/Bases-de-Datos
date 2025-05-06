@@ -196,7 +196,7 @@ FROM limpieza
   WHERE NOT (latitude BETWEEN 40.4774 AND 40.9176) 
   AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 ```
-Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se ***sobbaron???*** los prompts llenos de espacios (remplazados por NULL) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
+Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se reemplazaron los valores llenos de espacios por NULL y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
 
 Para ello, es necesario llevar a cabo el siguiente codigo, en el orden correspondiente.
 ```
