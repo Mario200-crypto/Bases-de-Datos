@@ -351,11 +351,12 @@ Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada
 
 ### Código para hacer la descomposición de la tabla original
 Antes de empezar con la creación de tablas, se creara un *SCHEMA* donde se almacenaran las nuevas tablas. Esto con el proposito de mantenerlas separadas de las tablas originales.
+El siguiente código se debe guardar en un archivo (se recomienda normalizacion.sql)
 ```
+-- normalizacion.sql
+
 CREATE SCHEMA nm;
-```
-#### Creacion de tablas
-```
+
 CREATE TABLE nm.lugar (
     collision_id BIGINT PRIMARY KEY,
     crash_timestamp TIMESTAMP,
@@ -410,24 +411,22 @@ CREATE TABLE nm.vehiculos (
     CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES nm.lugar(collision_id)
 );
 
-```
 
-#### Poblar las tablas con los datos
-Tabla **lugar**
-```
+--Tabla lugar
+
 INSERT INTO nm.lugar (collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, end_street_name)
 SELECT collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, off_street_name
 FROM limpieza;
 
-```
-Tabla **afectados**
-```
+
+--Tabla afectados
+
 INSERT INTO nm.afectados (collision_id, people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed)
 SELECT collision_id, persons_injured, persons_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorists_injured, motorists_killed
 FROM limpieza;
-```
-Tabla **tipo_de_factor**
-```
+
+--Tabla tipo_de_factor
+
 INSERT INTO nm.tipo_de_factor (tipo_de_factor)
 SELECT DISTINCT contributing_factor_1
 FROM limpieza
@@ -448,9 +447,9 @@ UNION
 SELECT DISTINCT contributing_factor_5
 FROM limpieza
 	WHERE contributing_factor_5 IS NOT NULL;
-```
-Tabla **tipo_de_vehiculo**
-```
+
+--Tabla tipo_de_vehiculo
+
 INSERT INTO nm.tipo_de_vehiculo (tipo_de_vehiculo)
 SELECT DISTINCT vehicle_code_1
 FROM limpieza
@@ -472,9 +471,9 @@ SELECT DISTINCT vehicle_code_5
 FROM limpieza
   WHERE vehicle_code_5 IS NOT NULL;
 
-```
-Tabla **factores**
-```
+
+--Tabla factores
+
 INSERT INTO nm.factores (num_factor, collision_id, tipo_de_factor_id)
 SELECT
   1 AS num_factor,
@@ -520,9 +519,9 @@ FROM limpieza l
 JOIN nm.tipo_de_factor t ON l.contributing_factor_5 = t.tipo_de_factor
 WHERE l.contributing_factor_5 IS NOT NULL;
 
-```
-Tabla **vehiculo**
-```
+
+--Tabla vehiculo
+
 INSERT INTO nm.vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
 SELECT
   1 AS num_vehiculo,
@@ -569,11 +568,15 @@ SELECT
 FROM limpieza l
 JOIN nm.tipo_de_vehiculo t ON l.vehicle_code_5 = t.tipo_de_vehiculo
 WHERE l.vehicle_code_5 IS NOT NULL;
-```
-Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
-```
+
+--Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
+
 DROP TABLE original;
 DROP TABLE limpieza;
+```
+Posteriormente Desde psql se debe ejecutar lo siguiente:
+```
+\i /ruta/al/archivo/normalizacion.sql
 ```
 ## Análisis de Datos y Atributos Analíticos
 Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `queries.sql` dentro del repositorio.
