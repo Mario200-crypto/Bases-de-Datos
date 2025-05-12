@@ -351,7 +351,7 @@ Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada
 
 ### Código para hacer la descomposición de la tabla original
 Antes de empezar con la creación de tablas, se creara un *SCHEMA* donde se almacenaran las nuevas tablas. Esto con el proposito de mantenerlas separadas de las tablas originales.
-El siguiente código se debe guardar en un archivo (se recomienda normalizacion.sql)
+El siguiente código se debe guardar en un archivo (se recomienda guardar el archivo como normalizacion.sql)
 ```
 -- normalizacion.sql
 
