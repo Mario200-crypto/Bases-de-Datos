@@ -317,7 +317,6 @@ Dentro de los archivos del repositorio se puede encontrar uno llamado `script_li
 ```
 \i /ruta/al/archivo/script_limpieza.sql
 ```
-
 ## Normalización de datos hasta cuarta forma normal 
 
 ### Diagrama de entidad-relación intuitivo
@@ -598,6 +597,8 @@ Dentro de los archivos del repositorio se puede encontrar uno llamado `script_no
 \i /ruta/al/archivo/script_normalizacion.sql
 ```
 Aclaramos que este script no contiene las ultimas dos lineas mostradas, es decir la eliminacion de las tablas original y limpieza.
+#### Algunas notas sobre la normalización
+Uno de los aspectos importantes que encontramos es que `latitude` y `longitude` deberian de poder darnos `zip_code` y todos los `*_street_name`, al menos teoricamente. En una base de datos sin atributos en `null` esta seria una dependencia funcional y podriamos mejorar el diseño ERD. Lamentablemente en nuestro caso, los atributos de `latitude` y `longitude` se dejan en null en muchos casos, los suficientes como para que no aplique la dependencia funcional. Por lo anterior se ha decidido dejar todos los atributos como estaban, evitando una perdida de datos.
 
 ## Análisis de Datos y Atributos Analíticos
 Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `script_analisis.sql` dentro del repositorio.Dicho archivo puede ser corrido usando el siguiente comando desde una consola SQL en caso de que el usuario quiera ver los resultados por su cuenta.
