@@ -301,7 +301,7 @@ SET vehicle_code_5 = UPPER(vehicle_code_5)
 ```
 Dentro de los archivos del repositorio se puede encontrar uno llamado `script_limpieza.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL.
 ```
-\i script_limpieza.sql
+\i /ruta/al/archivo/script_limpieza.sql
 ```
 
 ## Normalización de datos hasta cuarta forma normal 
@@ -590,7 +590,7 @@ Aclaramos que este script no contiene las ultimas dos lineas mostradas, es decir
 ## Análisis de Datos y Atributos Analíticos
 Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `script_analisis.sql` dentro del repositorio.Dicho archivo puede ser corrido usando el siguiente comando desde una consola SQL en caso de que el usuario quiera ver los resultados por su cuenta.
 ```
-\i script_analisis.sql
+\i /ruta/al/archivo/script_analisis.sql
 ```
 
 ### Estadísticas Básicas
