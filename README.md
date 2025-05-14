@@ -260,7 +260,7 @@ WHERE contributing_factor_1 = 80;
 ```
 
 
-La siguiente parte de la limpieza es el cambio de los valores `TEXT` a su version en mayusculas (para facilitar el manejo y analisis de datos) 
+La siguiente parte de la limpieza es el cambio de los valores `TEXT` a su version en mayusculas (para facilitar el manejo y analisis de datos). Para los atributos con numero, es decir `vehicle_code_#` y `contributing_factor_#` el codigo puede y debe utilizarse para todos los numeros disponibles.  
 ```
 -- borough
 UPDATE limpieza
@@ -282,45 +282,38 @@ SET off_street_name = UPPER(off_street_name)
 UPDATE limpieza
 SET contributing_factor_1 = UPPER(contributing_factor_1)
   WHERE contributing_factor_1 NOT LIKE UPPER(contributing_factor_1);
-  
-UPDATE limpieza
-SET contributing_factor_2 = UPPER(contributing_factor_2)
-  WHERE contributing_factor_2 NOT LIKE UPPER(contributing_factor_2);
-
-UPDATE limpieza
-SET contributing_factor_3 = UPPER(contributing_factor_3)
-  WHERE contributing_factor_3 NOT LIKE UPPER(contributing_factor_3);
-
-UPDATE limpieza
-SET contributing_factor_4 = UPPER(contributing_factor_4)
-  WHERE contributing_factor_4 NOT LIKE UPPER(contributing_factor_4);
-
-UPDATE limpieza
-SET contributing_factor_5 = UPPER(contributing_factor_5)
-  WHERE contributing_factor_5 NOT LIKE UPPER(contributing_factor_5);
 
 -- vehiculos
 UPDATE limpieza
 SET vehicle_code_1 = UPPER(vehicle_code_1)
   WHERE vehicle_code_1 NOT LIKE UPPER(vehicle_code_1);
-  
-UPDATE limpieza
-SET vehicle_code_2 = UPPER(vehicle_code_2)
-  WHERE vehicle_code_2 NOT LIKE UPPER(vehicle_code_2);
 
-UPDATE limpieza
-SET vehicle_code_3 = UPPER(vehicle_code_3)
-  WHERE vehicle_code_3 NOT LIKE UPPER(vehicle_code_3);
-
-UPDATE limpieza
-SET vehicle_code_4 = UPPER(vehicle_code_4)
-  WHERE vehicle_code_4 NOT LIKE UPPER(vehicle_code_4);
-
-UPDATE limpieza
-SET vehicle_code_5 = UPPER(vehicle_code_5)
-  WHERE vehicle_code_5 NOT LIKE UPPER(vehicle_code_5);
 ```
-Dentro de los archivos del repositorio se puede encontrar uno llamado `script_limpieza.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL.
+Para la limpieza de los tipos de vehicle_codes, es decir tratar de unificar la mayor cantidad posible se utilizara el siguiente codigo, este puede y debe ser utilizado para todos los vehicle_code:
+```
+UPDATE limpieza
+SET vehicle_code_1 = CASE
+    WHEN vehicle_code_1 IS NULL OR TRIM(vehicle_code_1) = '' THEN NULL
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('SUV', 'SPORT UTILITY VEHICLE', 'STATION WAGON/SPORT UTILITY VEHICLE', 'SPORT UTILITY', 'SPORT UTILITY / STATION WAGON') THEN 'SUV'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('PICK-UP TRUCK', 'PICKUP', 'PICK UP', 'PICK-') THEN 'PICKUP TRUCK'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('SEDAN', '4 DR SEDAN', '4DSD', '2 DR SEDAN', '2DSD') THEN 'SEDAN'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('VAN', 'MINIVAN', 'REFRIGERATED VAN', 'CARGO VAN') THEN 'VAN'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('TAXI', 'YELLOW TAXI', 'GREEN TAXI', 'CHASSIS CAB', 'CAB') THEN 'TAXI'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('BUS', 'SCHOOL BUS', 'SCHOO') THEN 'BUS'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('BICYCLE', 'BIKE', 'MINIBIKE', 'MINICYCLE') THEN 'BICYCLE'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('MOTORCYCLE', 'MOTOR BIKE', 'MOTORBIKE') THEN 'MOTORCYCLE'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('TRUCK', 'TRACTOR TRUCK', 'BOX TRUCK', 'TRACTOR', 'TOW TRUCK', 'PICKUP TRUCK', 'TRACTOR TRUCK DIESEL', 'TRACTOR TRUCK GASOLINE', 'TOW TRUCK / WRECKER', 'ARMORED TRUCK', 'BEVERAGE TRUCK', 'TRACT', 'TOW T', 'BOX T', 'FDNY TRUCK', 'MAIL TRUCK', 'UTILITY TR') THEN 'TRUCK'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('UNKNOWN', 'UNKNO') THEN 'UNKNOWN'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('SCOOTER', 'MOPED', 'VESPA', 'MOTORSCOOTER',  'E-SCO', 'E-SCOOTER', 'E-BIKE', 'E-BIK', 'SCOOT', 'GAS SCOOTE', 'E BIK') THEN 'SCOOTER/MOPED'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('FIRE TRUCK', 'FIRE', 'FIRET', 'FDNY', 'FIRETRUCK', 'FDNY FIRE') THEN 'FDNY'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('AMBULANCE', 'AMBUL', 'AMBU', 'FDNY AMBUL', 'AMB', 'AMBULETTE', 'NYS AMBULA') THEN 'AMBULANCE'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('DELIVERY', 'DELIV', 'USPS', 'DELV', 'USPS TRUCK', 'UHAUL', 'POSTAL TRU', 'US POSTAL') THEN 'DELIVERY'
+    WHEN UPPER(TRIM(vehicle_code_1)) IN ('PASS', 'PASSE', 'PASSENGER VEHICLE') THEN 'PASSENGER VEHICLE'
+    ELSE UPPER(TRIM(vehicle_code_1))
+END;
+```
+
+Dentro de los archivos del repositorio se puede encontrar uno llamado `script_limpieza.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL. El codigo ya contiene los codigos para todos los atributos con numero., es decir los codigos mostrados para solo un `contributing_factor` se ejecutaran para todos.
 ```
 \i /ruta/al/archivo/script_limpieza.sql
 ```
