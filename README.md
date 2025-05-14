@@ -253,10 +253,10 @@ Encontramos en los reportes varias incidencias de `contributing_factor` siendo i
 ```
 UPDATE limpieza
 SET contributing_factor_1 = 'DRIVER INATTENTION'
-WHERE contributing_factor_1 = 1;
+WHERE contributing_factor_1 = '1';
 UPDATE limpieza
 SET contributing_factor_1 = 'UNSPECIFIED'
-WHERE contributing_factor_1 = 80;
+WHERE contributing_factor_1 = '80';
 ```
 
 
