@@ -324,7 +324,8 @@ Dentro de los archivos del repositorio se puede encontrar uno llamado `script_li
 
 Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
 
-![image](https://github.com/user-attachments/assets/7d429df8-e69c-4b03-b189-df960037fa4a)
+![image](https://github.com/user-attachments/assets/eec1bf7d-1356-41b3-9403-3756bffad90b)
+
 
  - **lugar**: Contiene información principal del evento de colisión, incluyendo la fecha y hora (`crash_timestamp`), la ubicación geográfica (`borough`, `zip_code`, `latitude`, `longitude`) y las calles involucradas (`on_street_name`, `off_street_name` y `cross_street_name`).
 	- Clave primaria: `collision_id`
@@ -367,7 +368,7 @@ Dependencias multivaluadas:
 
 Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada relación tiene una clave primaria que determina el resto de sus atributos. Más aún, también se encuentra en *4FN* porque las dos DMV han sido aisladas en relaciones independientes (**factores**, **vehiculos**), evitando combinaciones cruzadas de valores. En esas relaciones (**factores**, **vehiculos**), `collision_id` es una superclave, cumpliendo la condición que exige *4FN*. Por lo tanto, el digrama de entidad-relación final de la base de datos ya en *4FN* será el mostrado al inicio del apartado.
 
-![image](https://github.com/user-attachments/assets/3ed86ae6-74b0-432f-ae5d-b3a24468b778)
+![image](https://github.com/user-attachments/assets/8a945fe0-c337-4ba5-8578-6e0ca27b6b47)
 
 
 ### Código para hacer la descomposición de la tabla original
