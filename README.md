@@ -317,7 +317,6 @@ Dentro de los archivos del repositorio se puede encontrar uno llamado `script_li
 ```
 \i /ruta/al/archivo/script_limpieza.sql
 ```
-
 ## Normalización de datos hasta cuarta forma normal 
 
 ### Diagrama de entidad-relación intuitivo
@@ -599,6 +598,8 @@ Dentro de los archivos del repositorio se puede encontrar uno llamado `script_no
 \i /ruta/al/archivo/script_normalizacion.sql
 ```
 Aclaramos que este script no contiene las ultimas dos lineas mostradas, es decir la eliminacion de las tablas original y limpieza.
+#### Algunas notas sobre la normalización
+Uno de los aspectos importantes que encontramos es que `latitude` y `longitude` deberian de poder darnos `zip_code` y todos los `*_street_name`, al menos teoricamente. En una base de datos sin atributos en `null` esta seria una dependencia funcional y podriamos mejorar el diseño ERD. Lamentablemente en nuestro caso, los atributos de `latitude` y `longitude` se dejan en null en muchos casos, los suficientes como para que no aplique la dependencia funcional. Por lo anterior se ha decidido dejar todos los atributos como estaban, evitando una perdida de datos.
 
 ## Análisis de Datos y Atributos Analíticos
 Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `script_analisis.sql` dentro del repositorio.Dicho archivo puede ser corrido usando el siguiente comando desde una consola SQL en caso de que el usuario quiera ver los resultados por su cuenta.
@@ -608,28 +609,29 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 ### Estadísticas Básicas
 #### Calles con más accidentes
-![Top_calle](https://github.com/user-attachments/assets/8212747e-9722-4638-9de9-584792d4cc39)
+![Top_calle](https://github.com/user-attachments/assets/6a027352-668f-4b52-aad4-b202c76a85f2)
 > Podemos observar que la mayoria de accidentes no reportan una calle principal involucrada, estas omisiones podemos atribuirlas a la NYPD. En general, podemos observar a Broadway como la calle con más accidentes, dicha calle atraviesa Manhattan y Bronx.
 
 #### Principales tipos de carros involucrados
-![Top_vehiculo](https://github.com/user-attachments/assets/5fcaa3db-f10f-4c14-9ba3-b358b8b83089)
-> Podemos observar que la mayoría de accidentes involucran a sedanes y SUV, que son los coches más populares para individuos y familias. Observamos también un porcentaje significativo de transportes publicos, como taxi y bus, dado que solo el 54% [*(Hunter College, 2024)*](https://www.hunterurban.org/wp-content/uploads/2024/06/Car-Light-NYC-Infographics-May-2024.pdf) de los hogares en Nueva York poseen un coche, esta incidencia toma sentido, esto es asumiendo que no existen taxis dentro de los vehículos catalogados como sedan.
+![Top_vehiculo](https://github.com/user-attachments/assets/f38ffbd4-389a-4d9a-89d8-490376d5bf57)
+> Podemos observar que la mayoría de accidentes involucran a SUV y sedanes, que son los coches más populares para familias e individuos. Observamos también un porcentaje significativo de transportes publicos, como taxi y bus, dado que solo el 54% [*(Hunter College, 2024)*](https://www.hunterurban.org/wp-content/uploads/2024/06/Car-Light-NYC-Infographics-May-2024.pdf) de los hogares en Nueva York poseen un coche, esta incidencia toma sentido, esto es asumiendo que no existen taxis dentro de los vehículos catalogados como sedan.
 
 #### Principales factores contribuyentes
-![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
-> En el análisis de los principales factores de accidentes en Nueva York, se observa que el 66.4% de los casos no especifican la causa, lo cual representa una limitación en la calidad de los datos. Aun así, la distracción del conductor resalta como el factor identificado más común (10.6%), seguido por no ceder el paso (2.7%) y conducir demasiado cerca de otro vehículo (2.6%).
+![Top_factor](https://github.com/user-attachments/assets/e5001c87-65a3-427b-adb7-2595ba070a7c)
+> En el análisis de los principales factores de accidentes en Nueva York, se observa que el 58.6% de los casos no especifican la causa, lo cual representa una limitación en la calidad de los datos. Aun así, la distracción del conductor resalta como el factor identificado más común (12.9%), seguido por no ceder el paso (3.5%) y conducir demasiado cerca de otro vehículo (3.3%).
 
 #### Tasa de gravedad de los accidentes
-| Acc. con Lesiones | Total Accidentes |  Promedio  |
+| Acc. con Lesiones | Total Accidentes |  Promedio [%] |
 | -------------     | :-------------:  |:----------:|
-|     513,848	      |     2,166,077	     |    23.72   |
+|     517,870	      |     2,175,582	     |    23.80    |
 
-> De los más de 2 millones de accidentes registrados, alrededor del 23.7% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
+> De los más de 2 millones de accidentes registrados, alrededor del 23.8% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
 
-| Acc. con Muertes  | Total Accidentes |  Promedio  |
+| Acc. con Muertes  | Total Accidentes |  Promedio [%]  |
 | -------------     | :-------------:  |:----------:|
-|       3,226	      |     2,166,077	     |   0.1489   |
-> Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
+|       3,248	      |      2,175,582	     |   0.1492   |
+
+> Solo el 0.14% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
 #### Análisis frecuencia-zona
 > Los mapas de 2022, 2023 y 2024 muestran una distribución bastante consistente de accidentes en Nueva York. A lo largo de los tres años se repiten patrones similares: los accidentes se concentran principalmente en áreas muy transitadas como Manhattan, Brooklyn y Queens. Aunque la intensidad varía un poco de un año a otro, las zonas más afectadas tienden a ser las mismas, lo que sugiere que ciertos sectores siguen siendo más propensos a los accidentes. Esta consistencia puede ayudar a identificar puntos críticos donde convendría implementar medidas de prevención.
@@ -646,25 +648,24 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 Para una distribución de todos los accidentes ocurridos desde 2012 (el dato más viejo de la base de datos), ingrese al siguiente link: [Incidentes por distrito](https://aguayo-0107.github.io/mapa_NYC/). Ahi encontrara la cantidad de accidentes catalogados por su distrito, el mapa tambien muestra los distritos de color diferente segun la cantidad de colisiones ocurridos dentro de ellos.
 
 #### Análisis gravedad-zona
-|Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
+|Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio [%] |
 | -------------|:------------:|:---------------:|:--------: |
-|BRONX	       |55,051	      |221,614	          |24.84      |
-|BROOKLYN	     |122,734	      |478,105	          |25.67      |
-|MANHATTAN	   |61,341	      |332,624	          |18.44      |
-|QUEENS	       |93,826	      |401,324	          |23.38      |
-|STATEN ISLAND |13,512        |62,750	            |21.53      |
-|NULL 	       |167,384       |669,660            |24.99      |
+|BRONX	       |55,527	      |221,614	          |24.84      |
+|BROOKLYN	     |123,916	      |478,105	          |25.67      |
+|MANHATTAN	   |61,969	      |332,624	          |18.44      |
+|QUEENS	       |94,597	      |401,324	          |23.38      |
+|STATEN ISLAND |13,622        |62,750	            |21.53      |
+|NULL 	       |168,239       |671,565            |25.05     |
 
 > Brooklyn y Bronx son los distritos con mayor proporción de accidentes con lesiones, con promedios cercanos al 25%. Seguidos por Queens, mientras que Manhattan presenta el promedio más bajo (18.44%).
 
 
-|Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
+|Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio [%] |
 | -------------|:------------:|:---------------:|:--------:  |
-|BRONX	       |296	          |221,614	          |0.1335      |
-|BROOKLYN	     |659	          |478,105	          |0.1378      |
-|MANHATTAN	   |351	          |332,624	          |0.1055      |
-|QUEENS	       |533	          |401,324	          |0.1328      |
-|STATEN ISLAND |100	          |62,750	            |0.1593      |
-|NULL 	       |1,287         |669,660            |0.1921      |
-
-> Staten Island muestra el promedio más alto de accidentes con muertes (0.1593%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1055%).
+|BRONX	       |299	          |222,720	          |0.1342     |
+|BROOKLYN	     |664	          |480,808	          |0.1381      |
+|MANHATTAN	   |355	          |334,155	          |0.1062      |
+|QUEENS	       |538	          |403,286	          |0.1334      |
+|STATEN ISLAND |100	          |63,048	            |0.1586      |
+|NULL 	       |1,292         |669,660            |0.1921      |
+> Staten Island muestra el promedio más alto de accidentes con muertes (0.1586%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1062%).
