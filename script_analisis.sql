@@ -1,5 +1,6 @@
 -- Proyecto Final Bases de Datos
--- Consultas utilizadas para el analisis final
+-- Se asume que ya se ha ejecutado script_normalizacion.sql
+-- Script dedicado para las consultas usadas para el analisis final
 
 
 --Calles mas peligrosas 
