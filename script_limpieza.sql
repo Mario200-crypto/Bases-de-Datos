@@ -200,38 +200,38 @@ AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 -- contributing factor 1 y 80
 UPDATE limpieza
 SET contributing_factor_1 = 'DRIVER INATTENTION'
-WHERE contributing_factor_1 = 1;
+WHERE contributing_factor_1 = '1';
 UPDATE limpieza
 SET contributing_factor_1 = 'UNSPECIFIED'
-WHERE contributing_factor_1 = 80;
+WHERE contributing_factor_1 = '80';
 
 UPDATE limpieza
 SET contributing_factor_2 = 'DRIVER INATTENTION'
-WHERE contributing_factor_2 = 1;
+WHERE contributing_factor_2 = '1';
 UPDATE limpieza
 SET contributing_factor_2 = 'UNSPECIFIED'
-WHERE contributing_factor_2 = 80;
+WHERE contributing_factor_2 = '80';
 
 UPDATE limpieza
 SET contributing_factor_3 = 'DRIVER INATTENTION'
-WHERE contributing_factor_3 = 1;
+WHERE contributing_factor_3 = '1';
 UPDATE limpieza
 SET contributing_factor_3 = 'UNSPECIFIED'
-WHERE contributing_factor_3 = 80;
+WHERE contributing_factor_3 = '80';
 
 UPDATE limpieza
 SET contributing_factor_4 = 'DRIVER INATTENTION'
-WHERE contributing_factor_4 = 1;
+WHERE contributing_factor_4 = '1';
 UPDATE limpieza
 SET contributing_factor_4 = 'UNSPECIFIED'
-WHERE contributing_factor_4 = 80;
+WHERE contributing_factor_4 = '80';
 
 UPDATE limpieza
 SET contributing_factor_5 = 'DRIVER INATTENTION'
-WHERE contributing_factor_5 = 1;
+WHERE contributing_factor_5 = '1';
 UPDATE limpieza
 SET contributing_factor_5 = 'UNSPECIFIED'
-WHERE contributing_factor_5 = 80;
+WHERE contributing_factor_5 = '80';
 
 -- vehiculos
 UPDATE limpieza
