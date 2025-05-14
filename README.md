@@ -252,11 +252,11 @@ SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
 Encontramos en los reportes varias incidencias de `contributing_factor` siendo igual a 80 o a 1. Investigando un poco hemos encontrado que significan `UNSPECIFIED` y `DRIVER INATTENTION` respectivamente. Usando el siguiente codigo los cambiaremos para una lectura mas sencilla. (El codigo puede utilizarse para todos los `contributing_factor`)
 ```
 UPDATE limpieza
-SET contributing_factor_1 = 'DRIVER INATTENTION'
-WHERE contributing_factor_1 = 1;
+SET contributing_factor_1 = 'DRIVER INATTENTION/DISTRACTION'
+WHERE contributing_factor_1 = '1';
 UPDATE limpieza
 SET contributing_factor_1 = 'UNSPECIFIED'
-WHERE contributing_factor_1 = 80;
+WHERE contributing_factor_1 = '80';
 ```
 
 
