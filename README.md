@@ -196,7 +196,7 @@ FROM limpieza
   WHERE NOT (latitude BETWEEN 40.4774 AND 40.9176) 
   AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 ```
-Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se ***sobbaron???*** los prompts llenos de espacios (remplazados por NULL) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
+Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se reemplazaron los valores llenos de espacios por NULL y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
 
 Para ello, es necesario llevar a cabo el siguiente codigo, en el orden correspondiente.
 ```
@@ -592,37 +592,35 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 #### Principales factores contribuyentes
 ![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
-> k
+> En el análisis de los principales factores de accidentes en Nueva York, se observa que el 66.4% de los casos no especifican la causa, lo cual representa una limitación en la calidad de los datos. Aun así, la distracción del conductor resalta como el factor identificado más común (10.6%), seguido por no ceder el paso (2.7%) y conducir demasiado cerca de otro vehículo (2.6%).
 
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |     513848	      |     2166077	     |    23.72   |
 
->AH
+> De los más de 2 millones de accidentes registrados, alrededor del 23.7% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
 
 | Acc. con Muertes  | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |       3226	      |     2166077	     |   0.1489   |
->AH
+> Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
-#### Análisis frecuencia-nivel socioeconómico
-2012-2025
-![ME VOY A MATAR](https://github.com/user-attachments/assets/863fc9ac-36ae-45c9-aebf-e6d266608390)
-2023
-![2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a)
-2022
-![2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30)
-2021
-![2021](https://github.com/user-attachments/assets/5a818521-5d17-4f6c-8142-48733ceeb159)
-2020
-![2020](https://github.com/user-attachments/assets/6a01ed14-0c13-4c57-a0dd-2b727a25c369)
-2019
-![2019](https://github.com/user-attachments/assets/ce50622b-40b6-4fb6-9081-8f4caede063f)
-2024
-![2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d)
+#### Análisis frecuencia-zona
+> Los mapas de 2022, 2023 y 2024 muestran una distribución bastante consistente de accidentes en Nueva York. A lo largo de los tres años se repiten patrones similares: los accidentes se concentran principalmente en áreas muy transitadas como Manhattan, Brooklyn y Queens. Aunque la intensidad varía un poco de un año a otro, las zonas más afectadas tienden a ser las mismas, lo que sugiere que ciertos sectores siguen siendo más propensos a los accidentes. Esta consistencia puede ayudar a identificar puntos críticos donde convendría implementar medidas de prevención.
 
-#### Análisis gravedad-nivel socioeconómico
+##### **2024**
+![Distribucion Accidentes 2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d "Distribucion de accidentes durante 2024")
+
+##### **2023**
+![Distribucion Accidentes 2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a "Distribucion de accidentes 2023")
+
+##### **2022**
+![Distribucion Accidentes 2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30 "Distribucion de accidentes 2022")
+######
+Para una distribución de todos los accidentes ocurridos desde 2012 (el dato más viejo de la base de datos), ingrese al siguiente link: [Incidentes por distrito](https://aguayo-0107.github.io/mapa_NYC/). Ahi encontrara la cantidad de accidentes catalogados por su distrito, el mapa tambien muestra los distritos de color diferente segun la cantidad de colisiones ocurridos dentro de ellos.
+
+#### Análisis gravedad-zona
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------: |
 |BRONX	       |55051	        |221614	          |24.84      |
@@ -632,6 +630,7 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |STATEN ISLAND |13512	        |62750	          |21.53      |
 |NULL 	       |167384        |669660           |24.99      |
 
+> Brooklyn y Bronx son los distritos con mayor proporción de accidentes con lesiones, con promedios cercanos al 25%. Seguidos por Queens, mientras que Manhattan presenta el promedio más bajo (18.44%).
 
 
 |Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
@@ -642,3 +641,5 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |QUEENS	       |533	          |401324	          |0.1328      |
 |STATEN ISLAND |100	          |62750	          |0.1593      |
 |NULL 	       |1287          |669660           |0.1921      |
+
+> Staten Island muestra el promedio más alto de accidentes con muertes (0.1593%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1055%).
