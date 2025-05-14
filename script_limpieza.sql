@@ -23,6 +23,9 @@ ALTER TABLE limpieza
 UPDATE limpieza
 SET zip_code = NULL
 	WHERE zip_code LIKE ' ';
+UPDATE limpieza
+SET zip_code = NULL
+	WHERE zip_code LIKE '     ';	
 
 -- geolocation
 UPDATE limpieza
@@ -39,36 +42,101 @@ WHERE NOT (latitude BETWEEN 40.4774 AND 40.9176)
 AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 
 -- nombres calles
-UPDATE limpieza
-SET on_street_name = NULL
+--ON
+	UPDATE limpieza
+	SET on_street_name = NULL
 	WHERE on_street_name LIKE '                                ';
 	
-UPDATE limpieza
-SET on_street_name = TRIM(on_street_name);
-
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'AVENUENUE', 'AVENUE')
+	UPDATE limpieza
+	SET on_street_name = TRIM(on_street_name);
+	
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'AVENUENUE', 'AVENUE')
 	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
 	
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'ave', 'AVENUE')
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'ave', 'AVENUE')
 	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
-
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'avenue', 'AVENUE')
+	
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'avenue', 'AVENUE')
 	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
-
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'Avenue', 'AVENUE')
+	
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'Avenue', 'AVENUE')
 	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
-
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'AVENUEnue', 'AVENUE')
+	
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'AVENUEnue', 'AVENUE')
 	WHERE on_street_name ILIKE '%AVE%' AND on_street_name NOT LIKE '% AVENUE %';
-
-UPDATE limpieza
-SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
+	
+	UPDATE limpieza
+	SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
 	WHERE on_street_name ILIKE '%vAVENUE%' AND on_street_name NOT LIKE '% AVENUE %';
+
+--CROSS
+	UPDATE limpieza
+	SET cross_street_name = NULL
+	WHERE cross_street_name LIKE '                                ';
+	
+	UPDATE limpieza
+	SET cross_street_name = TRIM(cross_street_name);
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'AVENUENUE', 'AVENUE')
+	WHERE cross_street_name ILIKE '%AVE%' AND cross_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'ave', 'AVENUE')
+	WHERE cross_street_name ILIKE '%AVE%' AND cross_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'avenue', 'AVENUE')
+	WHERE cross_street_name ILIKE '%AVE%' AND cross_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'Avenue', 'AVENUE')
+	WHERE cross_street_name ILIKE '%AVE%' AND cross_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'AVENUEnue', 'AVENUE')
+	WHERE cross_street_name ILIKE '%AVE%' AND cross_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET cross_street_name = REPLACE(cross_street_name, 'vAVENUE', 'AVENUE')
+	WHERE cross_street_name ILIKE '%vAVENUE%' AND cross_street_name NOT LIKE '% AVENUE %';
+
+---OFF
+	UPDATE limpieza
+	SET off_street_name = NULL
+	WHERE off_street_name LIKE '                                ';
+	
+	UPDATE limpieza
+	SET off_street_name = TRIM(off_street_name);
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'AVENUENUE', 'AVENUE')
+	WHERE off_street_name ILIKE '%AVE%' AND off_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'ave', 'AVENUE')
+	WHERE off_street_name ILIKE '%AVE%' AND off_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'avenue', 'AVENUE')
+	WHERE off_street_name ILIKE '%AVE%' AND off_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'Avenue', 'AVENUE')
+	WHERE off_street_name ILIKE '%AVE%' AND off_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'AVENUEnue', 'AVENUE')
+	WHERE off_street_name ILIKE '%AVE%' AND off_street_name NOT LIKE '% AVENUE %';
+	
+	UPDATE limpieza
+	SET off_street_name = REPLACE(off_street_name, 'vAVENUE', 'AVENUE')
+	WHERE off_street_name ILIKE '%vAVENUE%' AND off_street_name NOT LIKE '% AVENUE %';
 
 --mayusculas
 	-- borough
@@ -128,3 +196,41 @@ SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
 	UPDATE limpieza
 	SET vehicle_code_5 = UPPER(vehicle_code_5)
 	  WHERE vehicle_code_5 NOT LIKE UPPER(vehicle_code_5);
+
+-- contributing factor 1 y 80
+UPDATE limpieza
+SET contributing_factor_1 = 'DRIVER INATTENTION'
+WHERE contributing_factor_1 = 1;
+UPDATE limpieza
+SET contributing_factor_1 = 'UNSPECIFIED'
+WHERE contributing_factor_1 = 80;
+
+UPDATE limpieza
+SET contributing_factor_2 = 'DRIVER INATTENTION'
+WHERE contributing_factor_2 = 1;
+UPDATE limpieza
+SET contributing_factor_2 = 'UNSPECIFIED'
+WHERE contributing_factor_2 = 80;
+
+UPDATE limpieza
+SET contributing_factor_3 = 'DRIVER INATTENTION'
+WHERE contributing_factor_3 = 1;
+UPDATE limpieza
+SET contributing_factor_3 = 'UNSPECIFIED'
+WHERE contributing_factor_3 = 80;
+
+UPDATE limpieza
+SET contributing_factor_4 = 'DRIVER INATTENTION'
+WHERE contributing_factor_4 = 1;
+UPDATE limpieza
+SET contributing_factor_4 = 'UNSPECIFIED'
+WHERE contributing_factor_4 = 80;
+
+UPDATE limpieza
+SET contributing_factor_5 = 'DRIVER INATTENTION'
+WHERE contributing_factor_5 = 1;
+UPDATE limpieza
+SET contributing_factor_5 = 'UNSPECIFIED'
+WHERE contributing_factor_5 = 80;
+
+-- vehiculos

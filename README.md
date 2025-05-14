@@ -15,28 +15,36 @@ Este conjunto de datos contiene información sobre colisiones vehiculares ocurri
 * *Número de registros:* 2 millones de registros (tuplas) aproximadamente.
 * *Número de atributos:* 29 atributos (columnas)
 * ***Sobre los atributos:***
-   * `collision_id`: Llave primaria de la tabla.
-   * `crash_date`, `crash_time`: Fecha y hora del accidente.
-   * `borough`, `zip_code`, `on_street_name`, `cross_street_name`, `off_street_name`: Ubicación urbana.
-   * `latitude`, `longitude`, `location`: Coordenadas geoespaciales.
-   * `number_of_persons_injured`, `number_of_persons_killed`: Personas heridas y fallecidas.
-   * `number_of_pedestrians_injured`, `number_of_pedestrians_killed`: Peatones heridos y fallecidos.
-   * `number_of_cyclist_injured`, `number_of_cyclist_killed`: Ciclistas heridos y fallecidos
-   * `number_of_motorists_njured`, `number_of_motorists_killed`: Motociclistas heridos y fallecidos.
-   * `contributing_factor`: Numeradas del 1 al 5, causa atribuida al accidente.
-   * `vehicle_type_code`: Numerados del 1 al 5, tipo de vehículo involucrado.
 
-* Atributos Numéricos:
+| Atributo     | Explicacion del atributo |
+| -------------| ------------- |
+`collision_id` | Llave primaria de la tabla. |
+| `crash_date`, `crash_time`      | Fecha y hora del accidente.   |
+| `borough`, `zip_code`, `on_street_name`, `cross_street_name`, `off_street_name`      | Ubicación urbana.     |
+| `latitude`, `longitude`, `location`      | Coordenadas geoespaciales.     |
+| `number_of_persons_injured`, `number_of_persons_killed`| Personas heridas y fallecidas.|
+| `number_of_pedestrians_injured`, `number_of_pedestrians_killed`| Peatones heridos y fallecidos.|
+| `number_of_cyclist_injured`, `number_of_cyclist_killed`|Ciclistas heridos y fallecidos|
+| `number_of_motorists_njured`, `number_of_motorists_killed`| Motociclistas heridos y fallecidos.|
+| `contributing_factor`| Numeradas del 1 al 5, causa atribuida al accidente.|
+| `vehicle_type_code`| Numerados del 1 al 5, tipo de vehículo involucrado.|
+
+
+| Atributos Numéricos |
+|---------------------|
 `collision_id`, `latitude`, `longitude`, `location`, `number _of_persons_injured`, `number_of_persons_killed`, `number_of_pedestrians_injured`, `number_of_pedestrians_killed`, `number_of_cyclist_injured`, `number_of_cyclist_killed`, `number_of_motorists_njured`, `number_of_motorists_killed`
 
-* Atributos Categóricos:
-`borough`, `zip_code`, `contributing_factor`
+| Atributos Categóricos|
+|---------------------|
+|`borough`, `zip_code`, `contributing_factor`|
 
-* Atributos Textuales:
-`vehicle_type_code`, `on_street_name`, `cross_street_name`, `off_street_name`
+| Atributos Textuales|
+|---------------------|
+|`vehicle_type_code`, `on_street_name`, `cross_street_name`, `off_street_name`|
 
-* Atributos Temporales:
-`crash_date`, `crash_time`
+| Atributos Temporales|
+|---------------------|
+|`crash_date`, `crash_time`|
 
 ### Sobre el Objetivo del Proyecto
 El objetivo es analizar los datos recolectados para identificar patrones en la frecuencia, ubicación, gravedad de los incidentes y zonas de mayor riesgo. 
@@ -182,6 +190,9 @@ ALTER TABLE limpieza
 UPDATE limpieza
 SET zip_code = NULL
 	WHERE zip_code LIKE ' ';
+UPDATE limpieza
+SET zip_code = NULL
+	WHERE zip_code LIKE '     ';
 ```
 De la misma forma, utilizando el codigo a continuacion, cambiamos todas las latitudes y longitudes iguales a cero, a nulos. A la vez, eliminaremos aquellas coliciones que hayan ocurrido fuera de la ciudad de Nueva York, las delimitaciones geograficas utilizadas son:
 > Latitud mínima: 40.4774
@@ -238,6 +249,15 @@ SET on_street_name = REPLACE(on_street_name, 'vAVENUE', 'AVENUE')
 	WHERE on_street_name ILIKE '%vAVENUE%' AND on_street_name NOT LIKE '% AVENUE %';
 ```
 
+Encontramos en los reportes varias incidencias de `contributing_factor` siendo igual a 80 o a 1. Investigando un poco hemos encontrado que significan `UNSPECIFIED` y `DRIVER INATTENTION` respectivamente. Usando el siguiente codigo los cambiaremos para una lectura mas sencilla. (El codigo puede utilizarse para todos los `contributing_factor`)
+```
+UPDATE limpieza
+SET contributing_factor_1 = 'DRIVER INATTENTION'
+WHERE contributing_factor_1 = 1;
+UPDATE limpieza
+SET contributing_factor_1 = 'UNSPECIFIED'
+WHERE contributing_factor_1 = 80;
+```
 
 
 La siguiente parte de la limpieza es el cambio de los valores `TEXT` a su version en mayusculas (para facilitar el manejo y analisis de datos) 
@@ -608,13 +628,13 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
-|     513848	      |     2166077	     |    23.72   |
+|     513,848	      |     2,166,077	     |    23.72   |
 
 > De los más de 2 millones de accidentes registrados, alrededor del 23.7% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
 
 | Acc. con Muertes  | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
-|       3226	      |     2166077	     |   0.1489   |
+|       3,226	      |     2,166,077	     |   0.1489   |
 > Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
 #### Análisis frecuencia-zona
@@ -634,23 +654,23 @@ Para una distribución de todos los accidentes ocurridos desde 2012 (el dato má
 #### Análisis gravedad-zona
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------: |
-|BRONX	       |55051	        |221614	          |24.84      |
-|BROOKLYN	     |122734	      |478105	          |25.67      |
-|MANHATTAN	   |61341	        |332624	          |18.44      |
-|QUEENS	       |93826	        |401324	          |23.38      |
-|STATEN ISLAND |13512	        |62750	          |21.53      |
-|NULL 	       |167384        |669660           |24.99      |
+|BRONX	       |55,051	      |221,614	          |24.84      |
+|BROOKLYN	     |122,734	      |478,105	          |25.67      |
+|MANHATTAN	   |61,341	      |332,624	          |18.44      |
+|QUEENS	       |93,826	      |401,324	          |23.38      |
+|STATEN ISLAND |13,512        |62,750	            |21.53      |
+|NULL 	       |167,384       |669,660            |24.99      |
 
 > Brooklyn y Bronx son los distritos con mayor proporción de accidentes con lesiones, con promedios cercanos al 25%. Seguidos por Queens, mientras que Manhattan presenta el promedio más bajo (18.44%).
 
 
 |Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------:  |
-|BRONX	       |296	          |221614	          |0.1335      |
-|BROOKLYN	     |659	          |478105	          |0.1378      |
-|MANHATTAN	   |351	          |332624	          |0.1055      |
-|QUEENS	       |533	          |401324	          |0.1328      |
-|STATEN ISLAND |100	          |62750	          |0.1593      |
-|NULL 	       |1287          |669660           |0.1921      |
+|BRONX	       |296	          |221,614	          |0.1335      |
+|BROOKLYN	     |659	          |478,105	          |0.1378      |
+|MANHATTAN	   |351	          |332,624	          |0.1055      |
+|QUEENS	       |533	          |401,324	          |0.1328      |
+|STATEN ISLAND |100	          |62,750	            |0.1593      |
+|NULL 	       |1,287         |669,660            |0.1921      |
 
 > Staten Island muestra el promedio más alto de accidentes con muertes (0.1593%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1055%).
