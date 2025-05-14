@@ -201,7 +201,7 @@ FROM limpieza
   WHERE NOT (latitude BETWEEN 40.4774 AND 40.9176) 
   AND NOT (longitude BETWEEN -74.2591 AND -73.7004);
 ```
-Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se ***sobbaron???*** los prompts llenos de espacios (remplazados por NULL) y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
+Despues, para la limpieza de las columnas relacionadas al nombre de las calles (`on_street_name`, `off_street_name` y `cross_street_name`), se reemplazaron los valores llenos de espacios por NULL y finalmente, se arreglaron discrepancias relacionadas a la palabra AVENUE dentro de la base de datos (donde la palabra estaba escrita de diferentes formas en las tuplas).
 
 Para ello, es necesario llevar a cabo el siguiente codigo, en el orden correspondiente.
 ```
@@ -358,11 +358,12 @@ Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada
 
 ### Código para hacer la descomposición de la tabla original
 Antes de empezar con la creación de tablas, se creara un *SCHEMA* donde se almacenaran las nuevas tablas. Esto con el proposito de mantenerlas separadas de las tablas originales.
+El siguiente código se debe guardar en un archivo (se recomienda guardar el archivo como normalizacion.sql)
 ```
+-- normalizacion.sql
+
 CREATE SCHEMA nm;
-```
-#### Creacion de tablas
-```
+
 CREATE TABLE nm.lugar (
     collision_id BIGINT PRIMARY KEY,
     crash_timestamp TIMESTAMP,
@@ -417,24 +418,22 @@ CREATE TABLE nm.vehiculos (
     CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES nm.lugar(collision_id)
 );
 
-```
 
-#### Poblar las tablas con los datos
-Tabla **lugar**
-```
+--Tabla lugar
+
 INSERT INTO nm.lugar (collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, end_street_name)
 SELECT collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, off_street_name
 FROM limpieza;
 
-```
-Tabla **afectados**
-```
+
+--Tabla afectados
+
 INSERT INTO nm.afectados (collision_id, people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed)
 SELECT collision_id, persons_injured, persons_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorists_injured, motorists_killed
 FROM limpieza;
-```
-Tabla **tipo_de_factor**
-```
+
+--Tabla tipo_de_factor
+
 INSERT INTO nm.tipo_de_factor (tipo_de_factor)
 SELECT DISTINCT contributing_factor_1
 FROM limpieza
@@ -455,9 +454,9 @@ UNION
 SELECT DISTINCT contributing_factor_5
 FROM limpieza
 	WHERE contributing_factor_5 IS NOT NULL;
-```
-Tabla **tipo_de_vehiculo**
-```
+
+--Tabla tipo_de_vehiculo
+
 INSERT INTO nm.tipo_de_vehiculo (tipo_de_vehiculo)
 SELECT DISTINCT vehicle_code_1
 FROM limpieza
@@ -479,9 +478,9 @@ SELECT DISTINCT vehicle_code_5
 FROM limpieza
   WHERE vehicle_code_5 IS NOT NULL;
 
-```
-Tabla **factores**
-```
+
+--Tabla factores
+
 INSERT INTO nm.factores (num_factor, collision_id, tipo_de_factor_id)
 SELECT
   1 AS num_factor,
@@ -527,9 +526,9 @@ FROM limpieza l
 JOIN nm.tipo_de_factor t ON l.contributing_factor_5 = t.tipo_de_factor
 WHERE l.contributing_factor_5 IS NOT NULL;
 
-```
-Tabla **vehiculo**
-```
+
+--Tabla vehiculo
+
 INSERT INTO nm.vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
 SELECT
   1 AS num_vehiculo,
@@ -576,15 +575,15 @@ SELECT
 FROM limpieza l
 JOIN nm.tipo_de_vehiculo t ON l.vehicle_code_5 = t.tipo_de_vehiculo
 WHERE l.vehicle_code_5 IS NOT NULL;
-```
-Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
-```
+
+--Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
+
 DROP TABLE original;
 DROP TABLE limpieza;
 ```
 Dentro de los archivos del repositorio se puede encontrar uno llamado `script_normalizacion.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL.
 ```
-\i script_normalizacion.sql
+\i /ruta/al/archivo/script_normalizacion.sql
 ```
 Aclaramos que este script no contiene las ultimas dos lineas mostradas, es decir la eliminacion de las tablas original y limpieza.
 
@@ -605,24 +604,35 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 
 #### Principales factores contribuyentes
 ![Top_factor](https://github.com/user-attachments/assets/723cf719-4a31-46c4-a299-9ae3def26766)
-> k
+> En el análisis de los principales factores de accidentes en Nueva York, se observa que el 66.4% de los casos no especifican la causa, lo cual representa una limitación en la calidad de los datos. Aun así, la distracción del conductor resalta como el factor identificado más común (10.6%), seguido por no ceder el paso (2.7%) y conducir demasiado cerca de otro vehículo (2.6%).
 
 #### Tasa de gravedad de los accidentes
 | Acc. con Lesiones | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |     513848	      |     2166077	     |    23.72   |
 
->AH
+> De los más de 2 millones de accidentes registrados, alrededor del 23.7% resultaron en lesiones. Esto indica que, aunque no todos los choques son graves, una parte considerable termina afectando físicamente a los involucrados.
 
 | Acc. con Muertes  | Total Accidentes |  Promedio  |
 | -------------     | :-------------:  |:----------:|
 |       3226	      |     2166077	     |   0.1489   |
->AH
+> Solo el 0.15% de los accidentes registrados terminaron en una muerte, lo cual es un porcentaje bajo, pero sigue siendo preocupante considerando el volumen total de incidentes.
 ### Análisis 
-#### Análisis frecuencia-nivel socioeconómico
-![ME VOY A MATAR](https://github.com/user-attachments/assets/863fc9ac-36ae-45c9-aebf-e6d266608390)
+#### Análisis frecuencia-zona
+> Los mapas de 2022, 2023 y 2024 muestran una distribución bastante consistente de accidentes en Nueva York. A lo largo de los tres años se repiten patrones similares: los accidentes se concentran principalmente en áreas muy transitadas como Manhattan, Brooklyn y Queens. Aunque la intensidad varía un poco de un año a otro, las zonas más afectadas tienden a ser las mismas, lo que sugiere que ciertos sectores siguen siendo más propensos a los accidentes. Esta consistencia puede ayudar a identificar puntos críticos donde convendría implementar medidas de prevención.
 
-#### Análisis gravedad-nivel socioeconómico
+##### **2024**
+![Distribucion Accidentes 2024](https://github.com/user-attachments/assets/816139f9-f8f5-473d-be28-b3b986aeb61d "Distribucion de accidentes durante 2024")
+
+##### **2023**
+![Distribucion Accidentes 2023](https://github.com/user-attachments/assets/0e557f08-cf28-4d78-9561-666dd900e61a "Distribucion de accidentes 2023")
+
+##### **2022**
+![Distribucion Accidentes 2022](https://github.com/user-attachments/assets/11fefca8-7505-473f-882f-c8ce9c7c6d30 "Distribucion de accidentes 2022")
+######
+Para una distribución de todos los accidentes ocurridos desde 2012 (el dato más viejo de la base de datos), ingrese al siguiente link: [Incidentes por distrito](https://aguayo-0107.github.io/mapa_NYC/). Ahi encontrara la cantidad de accidentes catalogados por su distrito, el mapa tambien muestra los distritos de color diferente segun la cantidad de colisiones ocurridos dentro de ellos.
+
+#### Análisis gravedad-zona
 |Distrito      | Acc. con Lesiones | Acc. en Distrito  | Promedio  |
 | -------------|:------------:|:---------------:|:--------: |
 |BRONX	       |55051	        |221614	          |24.84      |
@@ -632,6 +642,7 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |STATEN ISLAND |13512	        |62750	          |21.53      |
 |NULL 	       |167384        |669660           |24.99      |
 
+> Brooklyn y Bronx son los distritos con mayor proporción de accidentes con lesiones, con promedios cercanos al 25%. Seguidos por Queens, mientras que Manhattan presenta el promedio más bajo (18.44%).
 
 
 |Distrito      | Acc. con Muertes | Acc. en Distrito  | Promedio  |
@@ -643,3 +654,4 @@ Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las
 |STATEN ISLAND |100	          |62750	          |0.1593      |
 |NULL 	       |1287          |669660           |0.1921      |
 
+> Staten Island muestra el promedio más alto de accidentes con muertes (0.1593%) a pesar de tener menos accidentes totales que los demás distritos. Mientras que Manhattan presenta el promedio más bajo (0.1055%).
