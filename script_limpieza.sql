@@ -8,7 +8,7 @@ SELECT *
 FROM original;
 
 -- hora y fecha del accidente
-AALTER TABLE limpieza
+ALTER TABLE limpieza
 	ADD COLUMN crash_timestamp TIMESTAMP;
 
 UPDATE limpieza
