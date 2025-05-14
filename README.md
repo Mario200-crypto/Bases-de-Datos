@@ -152,11 +152,16 @@ FROM original
 WHERE crash_date is NULL or crash_time is NULL or borough is NULL or zip_code is NULL or latitude is NULL or longitude is NULL or location is NULL or (on_street_name is NULL and off_street_name is NULL and cross_street_name is NULL ) or (contributing_factor_1 is NULL  and contributing_factor_2 is NULL and contributing_factor_3 is NULL and contributing_factor_4 is NULL and contributing_factor_5 is NULL) or collision_id is NULL or (vehicle_code_1 is NULL and vehicle_code_2 is NULL and vehicle_code_3 is NULL and vehicle_code_4 is NULL and vehicle_code_5 is NULL);
 ```
 > Tomando en cuenta que puede haber valores NULL en 4 de 5 de los atributos repetidos ya que puede haber hasta 5 vehículos involucrados. 
-
+## Clonación del repositorio
+Para la correcta utilziación de los scripts incluidos en el repositorio y que estos puedan ser ejecutados de forma automática, se requiere de la clonación del repositorio, por favor utilice el siguiente código:
+```
+git clone https://github.com/Mario200-crypto/Bases-de-Datos.git
+cd Bases-de-Datos
+```
 ## Limpieza de Datos
 Antes de empezar la limpieza de datos, si se quiere preservar la tabla original, se puede copiar el siguiente comando. Este hará una copia de la tabla original y entonces se podrá trabajar con la nueva tabla sin perder ningún dato.
 ```
-CREATE TABLE limpieza AS 
+CREATE TABLE IF NOT EXISTS limpieza AS
 SELECT * FROM original;
 ```
 Para optimizar el proyecto, hemos decidido eliminar la columna de location, ya que ésta contiene la información de latitude y longitud, para lo cuál es más eficiente tenerlas por separado. También hemos decidido combinar crash_date y crash_time a un solo atributo crash_timestamp, ya que consideramos redundante tener dos atributos que pueden ser solo uno. 
@@ -294,6 +299,11 @@ UPDATE limpieza
 SET vehicle_code_5 = UPPER(vehicle_code_5)
   WHERE vehicle_code_5 NOT LIKE UPPER(vehicle_code_5);
 ```
+Dentro de los archivos del repositorio se puede encontrar uno llamado `script_limpieza.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL.
+```
+\i /ruta/al/archivo/script_limpieza.sql
+```
+
 ## Normalización de datos hasta cuarta forma normal 
 
 ### Diagrama de entidad-relación intuitivo
@@ -301,9 +311,6 @@ SET vehicle_code_5 = UPPER(vehicle_code_5)
 Antes de ofrecer el diagrama de entidad-relación final en cuarta forma normal, primero ofrecemos el modelo relacional intuitivo sin tomar en cuenta la teoría de normalización. El diagrama de entidad-relación intuitivo es el siguiente:
 
 ![image](https://github.com/user-attachments/assets/7d429df8-e69c-4b03-b189-df960037fa4a)
-
-
-
 
  - **lugar**: Contiene información principal del evento de colisión, incluyendo la fecha y hora (`crash_timestamp`), la ubicación geográfica (`borough`, `zip_code`, `latitude`, `longitude`) y las calles involucradas (`on_street_name`, `off_street_name` y `cross_street_name`).
 	- Clave primaria: `collision_id`
@@ -351,11 +358,12 @@ Como podemos notar, el diagrama de entidad-relación está en *FNBC* porque cada
 
 ### Código para hacer la descomposición de la tabla original
 Antes de empezar con la creación de tablas, se creara un *SCHEMA* donde se almacenaran las nuevas tablas. Esto con el proposito de mantenerlas separadas de las tablas originales.
+El siguiente código se debe guardar en un archivo (se recomienda guardar el archivo como normalizacion.sql)
 ```
+-- normalizacion.sql
+
 CREATE SCHEMA nm;
-```
-#### Creacion de tablas
-```
+
 CREATE TABLE nm.lugar (
     collision_id BIGINT PRIMARY KEY,
     crash_timestamp TIMESTAMP,
@@ -410,24 +418,22 @@ CREATE TABLE nm.vehiculos (
     CONSTRAINT fk_collision_id FOREIGN KEY (collision_id) REFERENCES nm.lugar(collision_id)
 );
 
-```
 
-#### Poblar las tablas con los datos
-Tabla **lugar**
-```
+--Tabla lugar
+
 INSERT INTO nm.lugar (collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, end_street_name)
 SELECT collision_id, crash_timestamp, borough, latitude, longitude, zip_code, on_street_name, cross_street_name, off_street_name
 FROM limpieza;
 
-```
-Tabla **afectados**
-```
+
+--Tabla afectados
+
 INSERT INTO nm.afectados (collision_id, people_injured, people_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorcyclists_injured, motorcyclists_killed)
 SELECT collision_id, persons_injured, persons_killed, pedestrians_injured, pedestrians_killed, cyclists_injured, cyclists_killed, motorists_injured, motorists_killed
 FROM limpieza;
-```
-Tabla **tipo_de_factor**
-```
+
+--Tabla tipo_de_factor
+
 INSERT INTO nm.tipo_de_factor (tipo_de_factor)
 SELECT DISTINCT contributing_factor_1
 FROM limpieza
@@ -448,9 +454,9 @@ UNION
 SELECT DISTINCT contributing_factor_5
 FROM limpieza
 	WHERE contributing_factor_5 IS NOT NULL;
-```
-Tabla **tipo_de_vehiculo**
-```
+
+--Tabla tipo_de_vehiculo
+
 INSERT INTO nm.tipo_de_vehiculo (tipo_de_vehiculo)
 SELECT DISTINCT vehicle_code_1
 FROM limpieza
@@ -472,9 +478,9 @@ SELECT DISTINCT vehicle_code_5
 FROM limpieza
   WHERE vehicle_code_5 IS NOT NULL;
 
-```
-Tabla **factores**
-```
+
+--Tabla factores
+
 INSERT INTO nm.factores (num_factor, collision_id, tipo_de_factor_id)
 SELECT
   1 AS num_factor,
@@ -520,9 +526,9 @@ FROM limpieza l
 JOIN nm.tipo_de_factor t ON l.contributing_factor_5 = t.tipo_de_factor
 WHERE l.contributing_factor_5 IS NOT NULL;
 
-```
-Tabla **vehiculo**
-```
+
+--Tabla vehiculo
+
 INSERT INTO nm.vehiculos (num_vehiculo, collision_id, tipo_de_vehiculo_id)
 SELECT
   1 AS num_vehiculo,
@@ -569,14 +575,23 @@ SELECT
 FROM limpieza l
 JOIN nm.tipo_de_vehiculo t ON l.vehicle_code_5 = t.tipo_de_vehiculo
 WHERE l.vehicle_code_5 IS NOT NULL;
-```
-Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
-```
+
+--Ya que quedaron las tablas, de manera opcional, se puede borrar la tabla original asi como la de limpieza
+
 DROP TABLE original;
 DROP TABLE limpieza;
 ```
+Dentro de los archivos del repositorio se puede encontrar uno llamado `script_normalizacion.sql` este archivo contiene los códigos listados anteriormente y puede ser corrido usando el siguiente comando desde una consola SQL.
+```
+\i /ruta/al/archivo/script_normalizacion.sql
+```
+Aclaramos que este script no contiene las ultimas dos lineas mostradas, es decir la eliminacion de las tablas original y limpieza.
+
 ## Análisis de Datos y Atributos Analíticos
-Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `queries.sql` dentro del repositorio.
+Recordando nuestro objetivo original, hemos encontrado los siguientes datos. Las consultas utlizadas pueden ser encontradas en el archivo `script_analisis.sql` dentro del repositorio.Dicho archivo puede ser corrido usando el siguiente comando desde una consola SQL en caso de que el usuario quiera ver los resultados por su cuenta.
+```
+\i /ruta/al/archivo/script_analisis.sql
+```
 
 ### Estadísticas Básicas
 #### Calles con más accidentes
